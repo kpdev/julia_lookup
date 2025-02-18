@@ -7,7 +7,8 @@
 extern "C" {
 #endif
 
-JL_DLLEXPORT jl_method_t *jl_lookup_generic_(jl_svec_t *types, jl_value_t *const limitto);
+JL_DLLEXPORT jl_method_t *jl_lookup_generic_(jl_value_t *F, jl_value_t **args, 
+                                            uint32_t nargs, uint32_t callsite, size_t world);
 
 #ifdef __cplusplus
 }
