@@ -2,7 +2,17 @@ cmake_minimum_required(VERSION 3.10)
 
 project(LookupGenericLibrary VERSION 1.0 LANGUAGES C)
 
-set(JULIA_INCLUDE_DIR "../julia/usr/include/julia" CACHE PATH "Path to Julia include directory")
+# Default vals
+set(ROOT_DIR "${CMAKE_SOURCE_DIR}/..")
+set(CMAKE_VERBOSE_MAKEFILE ON)
+set(BUILD_TESTING ON)
+set(CMAKE_C_COMPILER "${ROOT_DIR}/pp-llvm-project/build/bin/clang-15")
+# set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
+
+# message(FATAL_ERROR ${CMAKE_SOURCE_DIR})
+
+set(JULIA_INCLUDE_DIR "${ROOT_DIR}/julia/usr/include/julia" CACHE PATH "Path to Julia include directory")
 if(NOT EXISTS "${JULIA_INCLUDE_DIR}/julia.h")
     message(FATAL_ERROR "Julia headers not found in ${JULIA_INCLUDE_DIR}")
 endif()
@@ -12,11 +22,11 @@ set(SOURCES lookup_generic.c)
 add_library(lookup_generic SHARED ${SOURCES})
 
 target_include_directories(lookup_generic PUBLIC ${JULIA_INCLUDE_DIR})
-target_include_directories(lookup_generic PRIVATE "../julia/src")
-target_include_directories(lookup_generic PRIVATE "../julia/usr/include")
+target_include_directories(lookup_generic PRIVATE "${ROOT_DIR}/julia/src")
+target_include_directories(lookup_generic PRIVATE "${ROOT_DIR}/julia/usr/include")
 
-find_library(JULIA_LIBRARY julia-debug PATHS "../julia/usr/lib/" NO_DEFAULT_PATH)
-find_library(JULIA_INTERNAL_LIBRARY julia-internal-debug PATHS "../julia/usr/lib/" NO_DEFAULT_PATH)
+find_library(JULIA_LIBRARY julia-debug PATHS "${ROOT_DIR}/julia/usr/lib/" NO_DEFAULT_PATH)
+find_library(JULIA_INTERNAL_LIBRARY julia-internal-debug PATHS "${ROOT_DIR}/julia/usr/lib/" NO_DEFAULT_PATH)
 if(JULIA_LIBRARY AND JULIA_INTERNAL_LIBRARY)
     target_link_libraries(lookup_generic PRIVATE ${JULIA_LIBRARY} ${JULIA_INTERNAL_LIBRARY})
 else()
@@ -30,12 +40,12 @@ set_target_properties(lookup_generic PROPERTIES
 
 if(BUILD_TESTING)
     add_executable(test_lookup_generic test_lookup_generic.c)
-    target_include_directories(test_lookup_generic PRIVATE "../../julia/src")
-    target_include_directories(test_lookup_generic PRIVATE "../../julia/usr/include")
+    target_include_directories(test_lookup_generic PRIVATE "${ROOT_DIR}/julia/src")
+    target_include_directories(test_lookup_generic PRIVATE "${ROOT_DIR}/julia/usr/include")
     target_link_libraries(test_lookup_generic PRIVATE lookup_generic ${JULIA_LIBRARY} ${JULIA_INTERNAL_LIBRARY})
     target_include_directories(test_lookup_generic PRIVATE ${JULIA_INCLUDE_DIR})
 
-    add_executable(test_lookup_generic_shared example_usage.c)
+    # add_executable(test_lookup_generic_shared example_usage.c)
     # target_link_libraries(test_lookup_generic PRIVATE lookup_generic)
-    target_include_directories(test_lookup_generic_shared PRIVATE ${JULIA_INCLUDE_DIR})
+    # target_include_directories(test_lookup_generic_shared PRIVATE ${JULIA_INCLUDE_DIR})
 endif()

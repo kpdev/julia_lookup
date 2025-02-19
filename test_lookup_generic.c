@@ -1,7 +1,11 @@
 #include <stdio.h>
+#include <sys/time.h>
+#include <unistd.h>
+
 #include "julia.h"
-// #include "julia_internal.h"
 #include "lookup_generic.h"
+
+
 
 struct _jl_value_t
 {
@@ -74,9 +78,47 @@ static int my_c_function(int x, int y) {
     return x + y;
 }
 
-int main() {
+struct Circle{};
+struct Rectangle{};
+struct Figure{}< struct Circle; struct Rectangle; >;
+
+void MultiMethod<struct Figure* f1, struct Figure* f2>() {}
+void MultiMethod<struct Figure.Circle* f1, struct Figure.Rectangle* f2>() {}
+
+extern jl_methtable_t* mt_mock_data;
+extern jl_array_t* jl_an_empty_vec_any_mock_data;
+extern jl_datatype_t* jl_typemap_level_type_mock_data;
+
+void init_mock_data_for_test()
+{
+    mt_mock_data = malloc(sizeof(jl_methtable_t));
+    mt_mock_data->leafcache = malloc(sizeof(jl_array_t));
+    mt_mock_data->cache = malloc(sizeof(jl_typemap_entry_t));
+    ((jl_typemap_entry_t*)mt_mock_data->cache)->sig = malloc(sizeof(jl_tuple_type));
+    ((jl_typemap_entry_t*)mt_mock_data->cache)->sig->parameters = malloc(sizeof(jl_svec_t));
+    ((jl_typemap_entry_t*)mt_mock_data->cache)->sig->parameters->length = 2;
+
+    jl_an_empty_vec_any_mock_data = malloc(sizeof(jl_array_t));
+    jl_typemap_level_type_mock_data = malloc(sizeof(jl_datatype_t));
+}
+
+int main(int main_argc, char** main_argv) {
     // 
     printf("Start main\n");
+
+    if (main_argc != 2) {
+        printf("ERROR: Command line: <program> <number_of_iters>\n");
+        exit(EXIT_FAILURE);
+    }
+
+    const int number_of_iters = atoi(main_argv[1]);
+    printf("number_of_iters = %d\n", number_of_iters);
+    if (number_of_iters <=0) {
+        printf("ERROR: number_of_iters should be >= 0\n");
+        exit(EXIT_FAILURE);
+    }
+
+    init_mock_data_for_test();
 
     jl_value_t **args; 
     uint32_t nargs = 2;
@@ -108,18 +150,33 @@ int main() {
         printf("F is NULL\n");
     }
 
+    struct timeval tval_before, tval_after, tval_result;
+    gettimeofday(&tval_before, NULL);
 
-
-    // Invoke
-    // JL_DLLEXPORT jl_method_t *jl_lookup_generic_(jl_value_t *F, jl_value_t **args, 
-    //     uint32_t nargs, uint32_t callsite, size_t world);
-    jl_method_t *method = jl_lookup_generic_(F, args, nargs, callsite, world);
-
-    if (method) {
-        printf("Method found!\n");
-    } else {
-        printf("No method found.\n");
+    jl_method_t *method = NULL;
+    for (int i = 0; i < number_of_iters; i++) {
+        method = jl_lookup_generic_(F, args, nargs, callsite, world);
+        if (method) {
+            printf("%d\n", (int)method->name->hash);
+        }
     }
+
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+
+    printf("Time elapsed Julia: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
+
+
+    struct Figure.Circle fc;
+    struct Figure.Rectangle fr;
+    gettimeofday(&tval_before, NULL);
+    for (int i = 0; i < number_of_iters; i++) {
+        MultiMethod<&fc, &fr>();
+    }
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+
+    printf("Time elapsed PP: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
 
     return 0;
 }
