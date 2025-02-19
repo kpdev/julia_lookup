@@ -51,13 +51,10 @@ void create_test_args(jl_value_t ***args, uint32_t nargs) {
     // Заполняем массив примерными значениями
     for (uint32_t i = 0; i < nargs; i++) {
         if (i == 0) {
-            printf("111\n");
             (*args)[i] = (jl_value_t *)jl_int32_type; // Первый аргумент: Int32
         } else if (i == 1) {
-            printf("222\n");
             (*args)[i] = (jl_value_t *)jl_float64_type; // Второй аргумент: Float64
         } else {
-            printf("333\n");
             (*args)[i] = (jl_value_t *)jl_any_type; // Дополнительные аргументы: Any
         }
     }
@@ -103,8 +100,6 @@ void init_mock_data_for_test()
 }
 
 int main(int main_argc, char** main_argv) {
-    // 
-    printf("Start main\n");
 
     if (main_argc != 2) {
         printf("ERROR: Command line: <program> <number_of_iters>\n");
@@ -123,29 +118,12 @@ int main(int main_argc, char** main_argv) {
     jl_value_t **args; 
     uint32_t nargs = 2;
     uint32_t callsite = 0;
-    size_t world = 0; // test purpose
+    size_t world = 0; // mock for test
 
     create_test_args(&args, nargs);
 
-    // jl_init();
-    // jl_eval_string("using Base");
-    printf("Start F\n");
     jl_value_t *F = malloc(sizeof(jl_value_t));
-    // jl_value_t *F = jl_eval_string("+");
-    // jl_value_t *F = jl_get_global(jl_base_module, jl_symbol("+"));
 
-    // Wrap the C function as a Julia function
-    // jl_function_t *F = jl_cfunction(
-    //     (void *)my_custom_function, // Pointer to the C function
-    //     args,              // Return type
-    //     "my_custom_function"        // Name of the function
-    // );
-
-    // void *cfunc_ptr = (void *)my_c_function;
-    // jl_value_t *F = jl_box_voidpointer(cfunc_ptr);
-
-
-    printf("After F\n");
     if (F == NULL) {
         printf("F is NULL\n");
     }
