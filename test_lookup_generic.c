@@ -4,9 +4,6 @@
 
 #include "lookup_generic.h"
 #include "test_lookup_generic.h"
-#include "ppp-mm-tag-disp/figure-rectangle.h"
-#include "ppp-mm-tag-disp/figure-triangle.h"
-#include "ppp-mm-tag-disp/multimethod-empty.h"
 
 
 int main(int main_argc, char** main_argv) {
@@ -70,11 +67,12 @@ int main(int main_argc, char** main_argv) {
     printf("Time elapsed Julia: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
 
 
-    struct Object.Spaceship spaceship;
-    struct Object.Asteroid asteroid;
+    struct Object* spaceship = get_space_object(1);
+    struct Object* asteroid  = get_space_object(2);
+
     gettimeofday(&tval_before, NULL);
     for (int i = 0; i < number_of_iters; i++) {
-        MultiMethodCollide<&spaceship, &asteroid>();
+        MultiMethodCollide<spaceship, asteroid>();
     }
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
@@ -82,12 +80,13 @@ int main(int main_argc, char** main_argv) {
     printf("Time elapsed PP: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
 
 
-    struct Figure.trian ft;
-    struct Figure.rect fr;
+
+    struct Figure* fr = get_figure(1);
+    struct Figure* ft = get_figure(2);
 
     gettimeofday(&tval_before, NULL);
     for (int i = 0; i < number_of_iters; i++) {
-        MultimethodEmpty<&fr>(&ft);
+        MultimethodEmpty<fr>(ft);
     }
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);

@@ -38,3 +38,28 @@ void init_mock_data_for_test()
 volatile int collide_default = 0, collide_sa = 0;
 void MultiMethodCollide<struct Object* f1, struct Object* f2>() { collide_default++; }
 void MultiMethodCollide<struct Object.Spaceship* f1, struct Object.Asteroid* f2>() { collide_sa++; }
+
+
+struct Figure* get_figure(int i)
+{
+    if (i == 1) {
+        return create_spec(Figure.rect);
+    }
+    if (i == 2) {
+        return create_spec(Figure.trian);
+    }
+
+    exit(EXIT_FAILURE);
+}
+
+struct Object* get_space_object(int i)
+{
+    if (i == 1) {
+        return create_spec(Object.Spaceship);
+    }
+    if (i == 2) {
+        return create_spec(Object.Asteroid);
+    }
+
+    exit(EXIT_FAILURE);
+}
