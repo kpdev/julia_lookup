@@ -5,6 +5,9 @@
 #include "julia.h"
 #include "lookup_generic.h"
 
+#include "ppp-mm-tag-disp/figure-rectangle.h"
+#include "ppp-mm-tag-disp/figure-triangle.h"
+#include "ppp-mm-tag-disp/multimethod-empty.h"
 
 
 struct _jl_value_t
@@ -75,12 +78,12 @@ static int my_c_function(int x, int y) {
     return x + y;
 }
 
-struct Circle{};
-struct Rectangle{};
-struct Figure{}< struct Circle; struct Rectangle; >;
+struct Spaceship{};
+struct Asteroid{};
+struct Object{}< struct Spaceship; struct Asteroid; >;
 
-void MultiMethod<struct Figure* f1, struct Figure* f2>() {}
-void MultiMethod<struct Figure.Circle* f1, struct Figure.Rectangle* f2>() {}
+void MultiMethodCollide<struct Object* f1, struct Object* f2>() {}
+void MultiMethodCollide<struct Object.Spaceship* f1, struct Object.Asteroid* f2>() {}
 
 extern jl_methtable_t* mt_mock_data;
 extern jl_array_t* jl_an_empty_vec_any_mock_data;
@@ -145,16 +148,29 @@ int main(int main_argc, char** main_argv) {
     printf("Time elapsed Julia: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
 
 
-    struct Figure.Circle fc;
-    struct Figure.Rectangle fr;
+    struct Object.Spaceship spaceship;
+    struct Object.Asteroid asteroid;
     gettimeofday(&tval_before, NULL);
     for (int i = 0; i < number_of_iters; i++) {
-        MultiMethod<&fc, &fr>();
+        MultiMethodCollide<&spaceship, &asteroid>();
     }
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
 
     printf("Time elapsed PP: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
+
+
+    struct Figure.trian ft;
+    struct Figure.rect fr;
+
+    gettimeofday(&tval_before, NULL);
+    for (int i = 0; i < number_of_iters; i++) {
+        MultimethodEmpty<&fr>(&ft);
+    }
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+
+    printf("Time elapsed PP Dispatch: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
 
     return 0;
 }

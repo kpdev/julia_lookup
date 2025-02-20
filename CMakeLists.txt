@@ -39,7 +39,11 @@ set_target_properties(lookup_generic PROPERTIES
 )
 
 if(BUILD_TESTING)
-    add_executable(test_lookup_generic test_lookup_generic.c)
+    add_executable(test_lookup_generic
+        test_lookup_generic.c
+        ppp-mm-tag-disp/multimethod-empty.c
+        ppp-mm-tag-disp/multimethod-empty.h
+        )
     target_include_directories(test_lookup_generic PRIVATE "${ROOT_DIR}/julia/src")
     target_include_directories(test_lookup_generic PRIVATE "${ROOT_DIR}/julia/usr/include")
     target_link_libraries(test_lookup_generic PRIVATE lookup_generic ${JULIA_LIBRARY} ${JULIA_INTERNAL_LIBRARY})
