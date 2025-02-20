@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(LookupGenericLibrary VERSION 1.0 LANGUAGES C)
+project(LookupGenericLibrary VERSION 1.0)
 
 # Default vals
 set(ROOT_DIR "${CMAKE_SOURCE_DIR}/..")
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(BUILD_TESTING ON)
-set(CMAKE_C_COMPILER "${ROOT_DIR}/pp-llvm-project/build/bin/clang-15")
+set(CMAKE_C_COMPILER "ppclang")
+set(CMAKE_CXX_COMPILER "/usr/bin/g++")
 # set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_BUILD_TYPE Release)
 
@@ -41,6 +42,8 @@ set_target_properties(lookup_generic PROPERTIES
 if(BUILD_TESTING)
     add_executable(test_lookup_generic
         test_lookup_generic.c
+        test_lookup_generic.h
+        test_lookup_generic_impl.c
         ppp-mm-tag-disp/multimethod-empty.c
         ppp-mm-tag-disp/multimethod-empty.h
         )
@@ -48,6 +51,12 @@ if(BUILD_TESTING)
     target_include_directories(test_lookup_generic PRIVATE "${ROOT_DIR}/julia/usr/include")
     target_link_libraries(test_lookup_generic PRIVATE lookup_generic ${JULIA_LIBRARY} ${JULIA_INTERNAL_LIBRARY})
     target_include_directories(test_lookup_generic PRIVATE ${JULIA_INCLUDE_DIR})
+
+    add_executable(test_visitor
+        oop/visitor.cpp
+        oop/measure.cpp
+        oop/visitor.h
+        )
 
     # add_executable(test_lookup_generic_shared example_usage.c)
     # target_link_libraries(test_lookup_generic PRIVATE lookup_generic)

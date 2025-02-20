@@ -2,6 +2,7 @@
 // #include "gf.h" // For generic functions
 #include "julia.h"
 #include "julia_internal.h"
+#include "lookup_generic.h"
 
 #define N_CALL_CACHE 4096
 _Atomic(jl_typemap_entry_t*) call_cache[N_CALL_CACHE];
