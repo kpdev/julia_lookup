@@ -93,5 +93,32 @@ int main(int main_argc, char** main_argv) {
 
     printf("Time elapsed PP Dispatch: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
 
+
+    Shape* sh_circ = get_shape(1);
+    Shape* sh_rect = get_shape(2);
+
+    gettimeofday(&tval_before, NULL);
+    for (int i = 0; i < number_of_iters; i++) {
+        sh_rect->collide(sh_rect, sh_circ);
+    }
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+
+    printf("Time elapsed Procedural VT Dispatch: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
+
+
+    ShapeSwitch* ss_circ = get_shape_switch(1);
+    ShapeSwitch* ss_rect = get_shape_switch(2);
+
+    gettimeofday(&tval_before, NULL);
+    for (int i = 0; i < number_of_iters; i++) {
+        CollideSwitch(ss_circ, ss_rect);
+    }
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+
+    printf("Time elapsed Procedural Switch Dispatch: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
+
+
     return 0;
 }

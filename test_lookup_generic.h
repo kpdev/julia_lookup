@@ -2,6 +2,8 @@
 #include "ppp-mm-tag-disp/figure-rectangle.h"
 #include "ppp-mm-tag-disp/figure-triangle.h"
 #include "ppp-mm-tag-disp/multimethod-empty.h"
+#include "procedural-vt/proced.h"
+#include "procedural-switch/proced-switch.h"
 
 struct _jl_value_t
 {

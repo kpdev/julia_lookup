@@ -46,6 +46,10 @@ if(BUILD_TESTING)
         test_lookup_generic_impl.c
         ppp-mm-tag-disp/multimethod-empty.c
         ppp-mm-tag-disp/multimethod-empty.h
+        procedural-vt/proced.h
+        procedural-vt/proced.c
+        procedural-switch/proced-switch.h
+        procedural-switch/proced-switch.c
         )
     target_include_directories(test_lookup_generic PRIVATE "${ROOT_DIR}/julia/src")
     target_include_directories(test_lookup_generic PRIVATE "${ROOT_DIR}/julia/usr/include")
