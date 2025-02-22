@@ -50,6 +50,7 @@ if(BUILD_TESTING)
         procedural-vt/proced.c
         procedural-switch/proced-switch.h
         procedural-switch/proced-switch.c
+        procedural-switch/proced-switch-3d.c
         )
     target_include_directories(test_lookup_generic PRIVATE "${ROOT_DIR}/julia/src")
     target_include_directories(test_lookup_generic PRIVATE "${ROOT_DIR}/julia/usr/include")
