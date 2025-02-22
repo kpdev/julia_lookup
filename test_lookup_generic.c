@@ -20,7 +20,7 @@ int main(int main_argc, char** main_argv) {
         exit(EXIT_FAILURE);
     }
 
-    init_mock_data_for_test();
+    init_mock_data_for_test(2);
 
     jl_value_t **args; 
     uint32_t nargs = 2;
@@ -30,7 +30,7 @@ int main(int main_argc, char** main_argv) {
     create_test_args(&args, nargs);
 
     jl_value_t *F = malloc(sizeof(jl_value_t));
-
+    jl_method_t *method = NULL;
     if (F == NULL) {
         printf("F is NULL\n");
     }
@@ -50,9 +50,10 @@ int main(int main_argc, char** main_argv) {
     printf("Time elapsed empty loop: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
 
 
+    nargs = 2;
+    create_test_args(&args, nargs);
     gettimeofday(&tval_before, NULL);
 
-    jl_method_t *method = NULL;
     count = 0;
     for (int i = 0; i < number_of_iters; i++) {
         method = jl_lookup_generic_(F, args, nargs, callsite, world);
@@ -65,6 +66,27 @@ int main(int main_argc, char** main_argv) {
     timersub(&tval_after, &tval_before, &tval_result);
 
     printf("Time elapsed Julia: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
+
+
+    nargs = 5;
+    init_mock_data_for_test(nargs);
+    create_test_args(&args, nargs);
+    gettimeofday(&tval_before, NULL);
+
+    count = 0;
+    for (int i = 0; i < number_of_iters; i++) {
+        method = jl_lookup_generic_(F, args, nargs, callsite, world);
+        if (method) {
+            count++;
+        }
+    }
+
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+
+    printf("Time elapsed Julia 5D: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
+
+
 
 
     struct Object* spaceship = get_space_object(1);

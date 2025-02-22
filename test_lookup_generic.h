@@ -13,7 +13,7 @@ struct _jl_value_t
 
 void create_test_args(jl_value_t ***args, uint32_t nargs);
 
-void init_mock_data_for_test();
+void init_mock_data_for_test(int num_of_args);
 
 
 struct Spaceship{};

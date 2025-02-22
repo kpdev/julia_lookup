@@ -22,14 +22,14 @@ extern jl_methtable_t* mt_mock_data;
 extern jl_array_t* jl_an_empty_vec_any_mock_data;
 extern jl_datatype_t* jl_typemap_level_type_mock_data;
 
-void init_mock_data_for_test()
+void init_mock_data_for_test(int num_of_args)
 {
     mt_mock_data = malloc(sizeof(jl_methtable_t));
     mt_mock_data->leafcache = malloc(sizeof(jl_array_t));
     mt_mock_data->cache = malloc(sizeof(jl_typemap_entry_t));
     ((jl_typemap_entry_t*)mt_mock_data->cache)->sig = malloc(sizeof(jl_tuple_type));
     ((jl_typemap_entry_t*)mt_mock_data->cache)->sig->parameters = malloc(sizeof(jl_svec_t));
-    ((jl_typemap_entry_t*)mt_mock_data->cache)->sig->parameters->length = 2;
+    ((jl_typemap_entry_t*)mt_mock_data->cache)->sig->parameters->length = num_of_args;
 
     jl_an_empty_vec_any_mock_data = malloc(sizeof(jl_array_t));
     jl_typemap_level_type_mock_data = malloc(sizeof(jl_datatype_t));
