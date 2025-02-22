@@ -80,6 +80,40 @@ int main(int main_argc, char** main_argv) {
     printf("Time elapsed PP: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
 
 
+    struct Object* spaceship3d = get_space_object(1);
+    struct Object* asteroid3d_1  = get_space_object(2);
+    struct Object* asteroid3d_2  = get_space_object(2);
+
+    gettimeofday(&tval_before, NULL);
+    for (int i = 0; i < number_of_iters; i++) {
+        MultiMethodCollide3D<spaceship3d, asteroid3d_1, asteroid3d_2>();
+    }
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+
+    printf("Time elapsed PP 3D: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
+
+
+    struct Object* spaceship5d = get_space_object(1);
+    struct Object* asteroid5d_1  = get_space_object(2);
+    struct Object* asteroid5d_2  = get_space_object(2);
+    struct Object* asteroid5d_3  = get_space_object(2);
+    struct Object* asteroid5d_4  = get_space_object(2);
+
+    gettimeofday(&tval_before, NULL);
+    for (int i = 0; i < number_of_iters; i++) {
+        MultiMethodCollide5D<spaceship5d,
+                             asteroid5d_1,
+                             asteroid5d_2,
+                             asteroid5d_3,
+                             asteroid5d_4>();
+    }
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+
+    printf("Time elapsed PP 5D: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
+
+
 
     struct Figure* fr = get_figure(1);
     struct Figure* ft = get_figure(2);

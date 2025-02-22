@@ -58,6 +58,7 @@ if(BUILD_TESTING)
 
     add_executable(test_visitor
         oop/visitor.cpp
+        oop/visitor3d.cpp
         oop/measure.cpp
         oop/visitor.h
         )

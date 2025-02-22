@@ -27,3 +27,13 @@ void ElementB::visit(class ElementB& visitor) {
     bb++;
 }
 
+ElementA g_ea;
+ElementB g_eb;
+
+Element* get_element(int i) {
+    if (i == 1)
+        return &g_ea;
+    if (i == 2)
+        return &g_eb;
+    exit(EXIT_FAILURE);
+}

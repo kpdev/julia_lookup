@@ -6,8 +6,8 @@
 
 void measure_visitor(int number_of_iters)
 {
-    Element* e1 = new ElementA();
-    Element* e2 = new ElementB();
+    Element* e1 = get_element(1);
+    Element* e2 = get_element(2);
 
     struct timeval tval_before, tval_after, tval_result;
     gettimeofday(&tval_before, NULL);
@@ -21,6 +21,26 @@ void measure_visitor(int number_of_iters)
 
     printf("Time elapsed Visitor: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
 }
+
+void measure_visitor3d(int number_of_iters)
+{
+    Shape3D* e1 = get_shape3d(1);
+    Shape3D* e2 = get_shape3d(1);
+    Shape3D* e3 = get_shape3d(2);
+
+    struct timeval tval_before, tval_after, tval_result;
+    gettimeofday(&tval_before, NULL);
+
+    for (int i = 0; i < number_of_iters; i++) {
+        collide3D(*e1, *e2, *e3);
+    }
+
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+
+    printf("Time elapsed Visitor3D: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
+}
+
 
 int main(int main_argc, char** main_argv)
 {
@@ -37,4 +57,5 @@ int main(int main_argc, char** main_argv)
     }
 
     measure_visitor(number_of_iters);
+    measure_visitor3d(number_of_iters);
 }

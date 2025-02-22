@@ -40,6 +40,41 @@ void MultiMethodCollide<struct Object* f1, struct Object* f2>() { collide_defaul
 void MultiMethodCollide<struct Object.Spaceship* f1, struct Object.Asteroid* f2>() { collide_sa++; }
 
 
+volatile int collide_default_3d = 0, collide_saa_3d = 0;
+void MultiMethodCollide3D<struct Object* f1,
+                          struct Object* f2,
+                          struct Object* f3>()
+{
+    collide_default_3d++;
+}
+
+void MultiMethodCollide3D<struct Object.Spaceship* f1,
+                          struct Object.Asteroid* f2,
+                          struct Object.Asteroid* f3>()
+{
+    collide_saa_3d++;
+}
+
+volatile int collide_default_5d = 0, collide_saaaa_5d = 0;
+
+void MultiMethodCollide5D<struct Object* f1,
+                          struct Object* f2,
+                          struct Object* f3,
+                          struct Object* f4,
+                          struct Object* f5>()
+{
+    collide_default_5d++;
+}
+
+void MultiMethodCollide5D<struct Object.Spaceship* f1,
+                          struct Object.Asteroid* f2,
+                          struct Object.Asteroid* f3,
+                          struct Object.Asteroid* f4,
+                          struct Object.Asteroid* f5>()
+{
+    collide_saaaa_5d++;
+}
+
 struct Figure* get_figure(int i)
 {
     if (i == 1) {

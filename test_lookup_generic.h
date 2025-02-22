@@ -21,6 +21,12 @@ struct Asteroid{};
 struct Object{}< struct Spaceship; struct Asteroid; >;
 
 void MultiMethodCollide<struct Object* f1, struct Object* f2>();
+void MultiMethodCollide3D<struct Object* f1, struct Object* f2, struct Object* f3>();
+void MultiMethodCollide5D<struct Object* f1,
+                          struct Object* f2,
+                          struct Object* f3,
+                          struct Object* f4,
+                          struct Object* f5>();
 
 struct Figure* get_figure(int i);
 
