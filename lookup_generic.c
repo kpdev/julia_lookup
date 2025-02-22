@@ -137,6 +137,7 @@ jl_typemap_entry_t *jl_typemap_entry_assoc_exact(jl_typemap_entry_t *ml, jl_valu
                         return ml;
                 }
                 else {
+                    exit(EXIT_FAILURE);
                     if (sig_match_leaf(arg1, args, jl_svec_data(ml->sig->parameters), n))
                         return ml;
                 }
@@ -211,43 +212,223 @@ static int8_t jl_cachearg_offset(jl_methtable_t *mt)
     return mt->offs;
 }
 
+
+static unsigned type_hash(jl_value_t *kj, int *failed);
+
+
+static unsigned typekey_hash(jl_typename_t *tn, jl_value_t **key, size_t n, int nofail) JL_NOTSAFEPOINT
+{
+    if (tn == jl_type_typename && key[0] == jl_bottom_type)
+        return jl_typeofbottom_type->hash;
+    size_t j;
+    unsigned hash = 3;
+    int failed = nofail;
+    for (j = 0; j < n; j++) {
+        jl_value_t *p = key[j];
+        size_t repeats = 1;
+        if (jl_is_vararg(p)) {
+            jl_vararg_t *vm = (jl_vararg_t*)p;
+            if (vm->N && jl_is_long(vm->N))
+                repeats = jl_unbox_long(vm->N);
+            else
+                hash = bitmix(0x064eeaab, hash); // 0x064eeaab is just a randomly chosen constant
+            p = vm->T ? vm->T : (jl_value_t*)jl_any_type;
+        }
+        unsigned hashp = type_hash(p, &failed);
+        if (failed && !nofail)
+            return 0;
+        while (repeats--)
+            hash = bitmix(hashp, hash);
+    }
+    // hash = bitmix(~tn->hash, hash);
+    hash = bitmix(~hash, hash);
+    return hash ? hash : 1;
+}
+
+
+static unsigned type_hash(jl_value_t *kj, int *failed)
+{
+    jl_value_t *uw = jl_is_unionall(kj) ? jl_unwrap_unionall(kj) : kj;
+    if (jl_is_datatype(uw)) {
+        jl_datatype_t *dt = (jl_datatype_t*)uw;
+        unsigned hash = dt->hash;
+        if (!hash) {
+            if (!*failed) {
+                *failed = 1;
+                return 0;
+            }
+            // compute a hash now, only for the parent object we are putting in the cache
+            hash = typekey_hash(dt->name, jl_svec_data(dt->parameters), jl_svec_len(dt->parameters), *failed);
+        }
+        return hash;
+    }
+    else if (jl_is_typevar(uw)) {
+        // ignore var and lb, since those might get normalized out in equality testing
+        return type_hash(((jl_tvar_t*)uw)->ub, failed);
+    }
+    else if (jl_is_uniontype(uw)) {
+        if (!*failed) {
+            *failed = 1;
+            return 0;
+        }
+        // compute a hash now, only for the parent object we are putting in the cache
+        unsigned hasha = type_hash(((jl_uniontype_t*)uw)->a, failed);
+        unsigned hashb = type_hash(((jl_uniontype_t*)uw)->b, failed);
+        // use a associative mixing function, with well-defined overflow
+        // since Union is associative
+        return hasha + hashb;
+    }
+    else {
+        return jl_object_id(uw);
+    }
+}
+
+
+uint64_t int64hash(uint64_t key)
+{
+    key = (~key) + (key << 21);            // key = (key << 21) - key - 1;
+    key =   key  ^ (key >> 24);
+    key = (key + (key << 3)) + (key << 8); // key * 265
+    key =  key ^ (key >> 14);
+    key = (key + (key << 2)) + (key << 4); // key * 21
+    key =  key ^ (key >> 28);
+    key =  key + (key << 31);
+    return key;
+}
+
+
 static unsigned typekeyvalue_hash(jl_typename_t *tn, jl_value_t *key1, jl_value_t **key, size_t n, int leaf) JL_NOTSAFEPOINT
 {
-    return 0;
-    // size_t j;
-    // unsigned hash = 3;
-    // for (j = 0; j < n; j++) {
-    //     jl_value_t *kj = j == 0 ? key1 : key[j - 1];
-    //     uint_t hj;
-    //     if (leaf && jl_is_kind(jl_typeof(kj))) {
-    //         hj = typekey_hash(jl_type_typename, &kj, 1, 0);
-    //         if (hj == 0)
-    //             return 0;
-    //     }
-    //     else {
-    //         hj = ((jl_datatype_t*)jl_typeof(kj))->hash;
-    //     }
-    //     hash = bitmix(hj, hash);
-    // }
+    size_t j;
+    unsigned hash = 3;
+    for (j = 0; j < n; j++) {
+        // jl_value_t *kj = j == 0 ? key1 : key[j - 1];
+        jl_value_t *kj = key1;
+        uint_t hj;
+        if (leaf && jl_is_kind(jl_typeof(kj))) {
+            hj = typekey_hash(jl_type_typename, &kj, 1, 0);
+            if (hj == 0)
+                return 0;
+        }
+        else {
+            hj = ((jl_datatype_t*)jl_typeof(kj))->hash;
+        }
+        hash = bitmix(hj, hash);
+    }
     // hash = bitmix(~tn->hash, hash);
-    // return hash ? hash : 1;
+    hash = bitmix(~hash, hash);
+    return hash ? hash : 1;
 }
+
+jl_svec_t mock_params;
+
+static int typekeyvalue_eq(jl_datatype_t *tt, jl_value_t *key1, jl_value_t **key, size_t n, int leaf)
+{
+    size_t j;
+    // TODO: This shouldn't be necessary
+    JL_GC_PROMISE_ROOTED(tt);
+    size_t tnp = n;// jl_nparams(tt);
+    if (n != tnp)
+        return 0;
+    int mock_val = 0;
+    if (leaf && tt->name == jl_type_typename && mock_val) {
+        // for Type{T}, require `typeof(T)` to match also, to avoid incorrect
+        // dispatch from changing the type of something.
+        // this should work because `Type`s don't have uids, and aren't the
+        // direct tags of values so we don't rely on pointer equality.
+        jl_value_t *kj = key1;
+        jl_value_t *tj = jl_tparam0(tt);
+        return (kj == tj || (jl_typeof(tj) == jl_typeof(kj) && jl_types_equal(tj, kj)));
+    }
+    for (j = 0; j < n; j++) {
+        jl_value_t *kj = j == 0 ? key1 : key[j - 1];
+        tt->parameters = &mock_params;
+        mock_params.length = n;
+        continue; // mock
+        jl_value_t *tj = jl_svecref(tt->parameters, j);
+        if (leaf && jl_is_type_type(tj)) {
+            jl_value_t *tp0 = jl_tparam0(tj);
+            if (!(kj == tp0 || (jl_typeof(tp0) == jl_typeof(kj) && jl_types_equal(tp0, kj))))
+                return 0;
+        }
+        else if (jl_typeof(kj) != tj) {
+            return 0;
+        }
+        else if (leaf && jl_is_kind(tj)) {
+            return 0;
+        }
+    }
+    return 0; // mock
+    // return 1;
+}
+
+
+static ssize_t lookup_type_idx_linearvalue(jl_svec_t *cache, jl_value_t *key1, jl_value_t **key, size_t n)
+{
+    if (n == 0)
+        return -1;
+    _Atomic(jl_datatype_t*) *data = (_Atomic(jl_datatype_t*)*)jl_svec_data(cache);
+    size_t cl = jl_svec_len(cache);
+    ssize_t i;
+    for (i = 0; i < cl; i++) {
+        jl_datatype_t *tt = jl_atomic_load_relaxed(&data[i]);
+        if ((jl_value_t*)tt == jl_nothing)
+            return ~i;
+        if (typekeyvalue_eq(tt, key1, key, n, 1))
+            return i;
+    }
+    return ~cl;
+}
+
+
+#define max_probe(size) ((size) <= 1024 ? 16 : (size) >> 6)
+#define h2index(hv, sz) (size_t)(((hv) & ((sz)-1)) * 2)
+
+jl_datatype_t mock_data_val;
+
+static jl_datatype_t *lookup_type_setvalue(jl_svec_t *cache, jl_value_t *key1, jl_value_t **key, size_t n, uint_t hv, int leaf)
+{
+    size_t sz = jl_svec_len(cache);
+    sz = n;
+    if (sz == 0)
+        return NULL;
+    size_t maxprobe = max_probe(sz);
+    _Atomic(jl_datatype_t*) *tab = (_Atomic(jl_datatype_t*)*)jl_svec_data(cache);
+    size_t index = h2index(hv, sz);
+    size_t orig = index;
+    size_t iter = 0;
+    do {
+        jl_datatype_t *val = jl_atomic_load_relaxed(&tab[index]);
+        val = &mock_data_val;
+        val->hash = hv;
+
+        if ((jl_value_t*)val == jl_nothing)
+            return NULL;
+        if (val->hash == hv && typekeyvalue_eq(val, key1, key, n, leaf))
+            return val;
+        index = (index + 1) & (sz - 1);
+        iter++;
+    } while (iter <= maxprobe && index != orig);
+    return NULL;
+}
+
+jl_svec_t mock_cache;
 
 static jl_value_t *lookup_typevalue(jl_typename_t *tn, jl_value_t *key1, jl_value_t **key, size_t n, int leaf)
 {
-    return NULL;
     // JL_TIMING(TYPE_CACHE_LOOKUP, TYPE_CACHE_LOOKUP);
-    // unsigned hv = typekeyvalue_hash(tn, key1, key, n, leaf);
-    // if (hv) {
-    //     jl_svec_t *cache = jl_atomic_load_relaxed(&tn->cache);
-    //     return (jl_value_t*)lookup_type_setvalue(cache, key1, key, n, hv, leaf);
-    // }
-    // else {
-    //     assert(leaf);
-    //     jl_svec_t *linearcache = jl_atomic_load_relaxed(&tn->linearcache);
-    //     ssize_t idx = lookup_type_idx_linearvalue(linearcache, key1, key, n);
-    //     return (idx < 0) ? NULL : jl_svecref(linearcache, idx);
-    // }
+    unsigned hv = typekeyvalue_hash(tn, key1, key, n, leaf);
+    if (hv) {
+        // jl_svec_t *cache = jl_atomic_load_relaxed(&tn->cache);
+        jl_svec_t *cache = &mock_cache;
+        return (jl_value_t*)lookup_type_setvalue(cache, key1, key, n, hv, leaf);
+    }
+    else {
+        assert(leaf);
+        jl_svec_t *linearcache = jl_atomic_load_relaxed(&tn->linearcache);
+        ssize_t idx = lookup_type_idx_linearvalue(linearcache, key1, key, n);
+        return (idx < 0) ? NULL : jl_svecref(linearcache, idx);
+    }
 }
 
 JL_EXTENSION struct _jl_typestack_t {

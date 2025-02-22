@@ -51,24 +51,6 @@ int main(int main_argc, char** main_argv) {
 
 
     nargs = 2;
-    create_test_args(&args, nargs);
-    gettimeofday(&tval_before, NULL);
-
-    count = 0;
-    for (int i = 0; i < number_of_iters; i++) {
-        method = jl_lookup_generic_(F, args, nargs, callsite, world);
-        if (method) {
-            count++;
-        }
-    }
-
-    gettimeofday(&tval_after, NULL);
-    timersub(&tval_after, &tval_before, &tval_result);
-
-    printf("Time elapsed Julia: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
-
-
-    nargs = 5;
     init_mock_data_for_test(nargs);
     create_test_args(&args, nargs);
     gettimeofday(&tval_before, NULL);
@@ -84,7 +66,66 @@ int main(int main_argc, char** main_argv) {
     gettimeofday(&tval_after, NULL);
     timersub(&tval_after, &tval_before, &tval_result);
 
+    printf("Time elapsed Julia Startup: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
+
+
+    nargs = 2;
+    create_test_args(&args, nargs);
+    gettimeofday(&tval_before, NULL);
+
+    count = 0;
+    for (int i = 0; i < number_of_iters; i++) {
+        method = jl_lookup_generic_(F, args, nargs, callsite, world);
+        if (method) {
+            count++;
+        }
+    }
+
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+
+    printf("Time elapsed Julia 2D: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
+
+
+
+    nargs = 3;
+    create_test_args(&args, nargs);
+    gettimeofday(&tval_before, NULL);
+
+    count = 0;
+    for (int i = 0; i < number_of_iters; i++) {
+        method = jl_lookup_generic_(F, args, nargs, callsite, world);
+        if (method) {
+            count++;
+        }
+    }
+
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+
+    printf("Time elapsed Julia 3D: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
+
+
+
+    nargs = 5;
+    create_test_args(&args, nargs);
+    gettimeofday(&tval_before, NULL);
+
+    count = 0;
+    for (int i = 0; i < number_of_iters; i++) {
+        method = jl_lookup_generic_(F, args, nargs, callsite, world);
+        if (method) {
+            count++;
+        }
+    }
+
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+
     printf("Time elapsed Julia 5D: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
+
+
+
 
 
 

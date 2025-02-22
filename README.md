@@ -21,18 +21,21 @@ $ make
 ```
 $ ./test_lookup_generic 1000000000
 number_of_iters = 1000000000
-Time elapsed empty loop: 0.238826
-Time elapsed Julia: 6.077953
-Time elapsed PP: 1.644591
-Time elapsed PP 3D: 1.652796
-Time elapsed PP 5D: 1.657737
-Time elapsed PP Dispatch: 1.620008
-Time elapsed Procedural VT Dispatch: 1.392644
-Time elapsed Procedural Switch Dispatch: 0.730607
-Time elapsed Procedural Switch Dispatch 3D: 0.751020
+Time elapsed empty loop: 0.511964
+Time elapsed Julia Startup: 64.396078
+Time elapsed Julia 2D: 64.429037
+Time elapsed Julia 3D: 66.270249
+Time elapsed Julia 5D: 94.318739
+Time elapsed PP: 3.507944
+Time elapsed PP 3D: 3.513362
+Time elapsed PP 5D: 3.531232
+Time elapsed PP Dispatch: 3.390464
+Time elapsed Procedural VT Dispatch: 2.926652
+Time elapsed Procedural Switch Dispatch: 1.489415
+Time elapsed Procedural Switch Dispatch 3D: 1.606618
 
 $ ./test_visitor 1000000000
 number_of_iters = 1000000000
-Time elapsed Visitor: 1.740013
-Time elapsed Visitor3D: 2.146128
+Time elapsed Visitor: 3.710451
+Time elapsed Visitor3D: 4.572742
 ```

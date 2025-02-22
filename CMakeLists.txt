@@ -9,7 +9,7 @@ set(BUILD_TESTING ON)
 set(CMAKE_C_COMPILER "ppclang")
 set(CMAKE_CXX_COMPILER "/usr/bin/g++")
 # set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_BUILD_TYPE Release)
+# set(CMAKE_BUILD_TYPE Release)
 
 # message(FATAL_ERROR ${CMAKE_SOURCE_DIR})
 
