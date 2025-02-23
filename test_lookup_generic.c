@@ -218,6 +218,20 @@ int main(int main_argc, char** main_argv) {
 
 
 
+    struct Obj* h_obj = get_obj(h_enum);
+    struct Obj* i_obj = get_obj(i_enum);
+
+    gettimeofday(&tval_before, NULL);
+    for (int i = 0; i < number_of_iters; i++) {
+        CollideSwitchX10(h_obj, i_obj);
+    }
+    gettimeofday(&tval_after, NULL);
+    timersub(&tval_after, &tval_before, &tval_result);
+
+    printf("Time elapsed Procedural Switch X10: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
+
+
+
     ShapeSwitch3D* ss_circ3D = get_ShapeSwitch3D(1);
     ShapeSwitch3D* ss_rect3D = get_ShapeSwitch3D(2);
     ShapeSwitch3D* ss_trian3D = get_ShapeSwitch3D(3);

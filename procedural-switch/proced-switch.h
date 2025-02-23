@@ -23,3 +23,22 @@ typedef struct ShapeSwitch3D ShapeSwitch3D;
 ShapeSwitch3D* get_ShapeSwitch3D(int i);
 
 void CollideSwitch3D(ShapeSwitch3D *s1, ShapeSwitch3D *s2, ShapeSwitch3D *s3);
+
+//----------------------
+struct Obj;
+
+typedef enum {
+    a_enum,
+    b_enum,
+    c_enum,
+    d_enum,
+    e_enum,
+    f_enum,
+    g_enum,
+    h_enum,
+    i_enum,
+    j_enum
+} ObjEnum;
+
+void CollideSwitchX10(struct Obj *o1, struct Obj *o2);
+struct Obj* get_obj(ObjEnum i);
