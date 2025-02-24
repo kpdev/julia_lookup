@@ -13,41 +13,50 @@ set(CMAKE_CXX_COMPILER "/usr/bin/g++")
 
 # message(FATAL_ERROR ${CMAKE_SOURCE_DIR})
 
-set(JULIA_INCLUDE_DIR "${ROOT_DIR}/julia/usr/include/julia" CACHE PATH "Path to Julia include directory")
-if(NOT EXISTS "${JULIA_INCLUDE_DIR}/julia.h")
-    message(FATAL_ERROR "Julia headers not found in ${JULIA_INCLUDE_DIR}")
+if (BUILD_JULIA)
+
+    set(JULIA_INCLUDE_DIR "${ROOT_DIR}/julia/usr/include/julia" CACHE PATH "Path to Julia include directory")
+    if(NOT EXISTS "${JULIA_INCLUDE_DIR}/julia.h")
+        message(FATAL_ERROR "Julia headers not found in ${JULIA_INCLUDE_DIR}")
+    endif()
+
+    set(SOURCES lookup_generic.c)
+
+    add_library(lookup_generic SHARED ${SOURCES})
+
+    target_include_directories(lookup_generic PUBLIC ${JULIA_INCLUDE_DIR})
+    target_include_directories(lookup_generic PRIVATE "${ROOT_DIR}/julia/src")
+    target_include_directories(lookup_generic PRIVATE "${ROOT_DIR}/julia/usr/include")
+
+    if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+        find_library(JULIA_LIBRARY julia-debug PATHS "${ROOT_DIR}/julia/usr/lib/" NO_DEFAULT_PATH)
+        find_library(JULIA_INTERNAL_LIBRARY julia-internal-debug PATHS "${ROOT_DIR}/julia/usr/lib/" NO_DEFAULT_PATH)
+        if(JULIA_LIBRARY AND JULIA_INTERNAL_LIBRARY)
+            target_link_libraries(lookup_generic PRIVATE ${JULIA_LIBRARY} ${JULIA_INTERNAL_LIBRARY})
+        else()
+            message(FATAL_ERROR "Julia library not found")
+        endif()
+    else()
+        find_library(JULIA_LIBRARY julia PATHS "${ROOT_DIR}/julia/usr/lib/" NO_DEFAULT_PATH)
+        find_library(JULIA_INTERNAL_LIBRARY julia-internal PATHS "${ROOT_DIR}/julia/usr/lib/" NO_DEFAULT_PATH)
+        if(JULIA_LIBRARY AND JULIA_INTERNAL_LIBRARY)
+            target_link_libraries(lookup_generic PRIVATE ${JULIA_LIBRARY} ${JULIA_INTERNAL_LIBRARY})
+        else()
+            message(FATAL_ERROR "Julia library not found")
+        endif()
+    endif()
+
+    # set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} BUILD_JULIA")
+
+    add_compile_options("-DBUILD_JULIA")
+
+    set_target_properties(lookup_generic PROPERTIES
+        OUTPUT_NAME "lookup_generic"
+        PREFIX ""
+    )
+
 endif()
 
-set(SOURCES lookup_generic.c)
-
-add_library(lookup_generic SHARED ${SOURCES})
-
-target_include_directories(lookup_generic PUBLIC ${JULIA_INCLUDE_DIR})
-target_include_directories(lookup_generic PRIVATE "${ROOT_DIR}/julia/src")
-target_include_directories(lookup_generic PRIVATE "${ROOT_DIR}/julia/usr/include")
-
-if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-    find_library(JULIA_LIBRARY julia-debug PATHS "${ROOT_DIR}/julia/usr/lib/" NO_DEFAULT_PATH)
-    find_library(JULIA_INTERNAL_LIBRARY julia-internal-debug PATHS "${ROOT_DIR}/julia/usr/lib/" NO_DEFAULT_PATH)
-    if(JULIA_LIBRARY AND JULIA_INTERNAL_LIBRARY)
-        target_link_libraries(lookup_generic PRIVATE ${JULIA_LIBRARY} ${JULIA_INTERNAL_LIBRARY})
-    else()
-        message(FATAL_ERROR "Julia library not found")
-    endif()
-else()
-    find_library(JULIA_LIBRARY julia PATHS "${ROOT_DIR}/julia/usr/lib/" NO_DEFAULT_PATH)
-    find_library(JULIA_INTERNAL_LIBRARY julia-internal PATHS "${ROOT_DIR}/julia/usr/lib/" NO_DEFAULT_PATH)
-    if(JULIA_LIBRARY AND JULIA_INTERNAL_LIBRARY)
-        target_link_libraries(lookup_generic PRIVATE ${JULIA_LIBRARY} ${JULIA_INTERNAL_LIBRARY})
-    else()
-        message(FATAL_ERROR "Julia library not found")
-    endif()
-endif()
-
-set_target_properties(lookup_generic PROPERTIES
-    OUTPUT_NAME "lookup_generic"
-    PREFIX ""
-)
 
 if(BUILD_TESTING)
     add_executable(test_lookup_generic
@@ -63,10 +72,13 @@ if(BUILD_TESTING)
         procedural-switch/proced-switch-3d.c
         procedural-switch/proced-switch-2dx10.c
         )
+
+if (BUILD_JULIA)
     target_include_directories(test_lookup_generic PRIVATE "${ROOT_DIR}/julia/src")
     target_include_directories(test_lookup_generic PRIVATE "${ROOT_DIR}/julia/usr/include")
     target_link_libraries(test_lookup_generic PRIVATE lookup_generic ${JULIA_LIBRARY} ${JULIA_INTERNAL_LIBRARY})
     target_include_directories(test_lookup_generic PRIVATE ${JULIA_INCLUDE_DIR})
+endif()
 
     add_executable(test_visitor
         oop/visitor.cpp

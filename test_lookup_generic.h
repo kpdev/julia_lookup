@@ -1,10 +1,14 @@
+#ifdef BUILD_JULIA
 #include "julia.h"
+#endif
+
 #include "ppp-mm-tag-disp/figure-rectangle.h"
 #include "ppp-mm-tag-disp/figure-triangle.h"
 #include "ppp-mm-tag-disp/multimethod-empty.h"
 #include "procedural-vt/proced.h"
 #include "procedural-switch/proced-switch.h"
 
+#ifdef BUILD_JULIA
 struct _jl_value_t
 {
 
@@ -15,6 +19,7 @@ void create_test_args(jl_value_t ***args, uint32_t nargs);
 
 void init_mock_data_for_test(int num_of_args);
 
+#endif
 
 struct Spaceship{};
 struct Asteroid{};

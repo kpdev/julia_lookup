@@ -11,8 +11,14 @@ $ cd ../
 $ git clone https://github.com/kpdev/julia_lookup.git
 $ cd julia_lookup
 $ mkdir build && cd build
-$ cmake -S .. -B .
+$ cmake -S .. -B . -DCMAKE_BUILD_TYPE=Release
 $ make
+```
+
+## Build with Julia enabled
+
+```
+$ cmake -S .. -B . -DCMAKE_BUILD_TYPE=Release -DBUILD_JULIA
 ```
 
 

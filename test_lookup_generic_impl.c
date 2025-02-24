@@ -1,5 +1,7 @@
+#include <stdlib.h>
 #include "test_lookup_generic.h"
 
+#ifdef BUILD_JULIA
 
 void create_test_args(jl_value_t ***args, uint32_t nargs) {
     // Выделяем память для массива указателей
@@ -22,6 +24,7 @@ extern jl_methtable_t* mt_mock_data;
 extern jl_array_t* jl_an_empty_vec_any_mock_data;
 extern jl_datatype_t* jl_typemap_level_type_mock_data;
 
+
 void init_mock_data_for_test(int num_of_args)
 {
     mt_mock_data = malloc(sizeof(jl_methtable_t));
@@ -34,6 +37,8 @@ void init_mock_data_for_test(int num_of_args)
     jl_an_empty_vec_any_mock_data = malloc(sizeof(jl_array_t));
     jl_typemap_level_type_mock_data = malloc(sizeof(jl_datatype_t));
 }
+
+#endif
 
 volatile int collide_default = 0, collide_sa = 0;
 void MultiMethodCollide<struct Object* f1, struct Object* f2>() { collide_default++; }

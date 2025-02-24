@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <stdlib.h>
 
+#ifdef BUILD_JULIA
 #include "lookup_generic.h"
+#endif
+
 #include "test_lookup_generic.h"
 
 
@@ -20,6 +24,9 @@ int main(int main_argc, char** main_argv) {
         exit(EXIT_FAILURE);
     }
 
+    struct timeval tval_before, tval_after, tval_result;
+
+#ifdef BUILD_JULIA
     init_mock_data_for_test(2);
 
     jl_value_t **args; 
@@ -35,7 +42,6 @@ int main(int main_argc, char** main_argv) {
         printf("F is NULL\n");
     }
 
-    struct timeval tval_before, tval_after, tval_result;
 
     gettimeofday(&tval_before, NULL);
 
@@ -124,7 +130,7 @@ int main(int main_argc, char** main_argv) {
 
     printf("Time elapsed Julia 5D: %ld.%06ld\n", (long int)tval_result.tv_sec, (long int)tval_result.tv_usec);
 
-
+#endif
 
 
 
