@@ -425,7 +425,8 @@ static jl_value_t *lookup_typevalue(jl_typename_t *tn, jl_value_t *key1, jl_valu
     }
     else {
         assert(leaf);
-        jl_svec_t *linearcache = jl_atomic_load_relaxed(&tn->linearcache);
+        // jl_svec_t *linearcache = jl_atomic_load_relaxed(&tn->linearcache);
+        jl_svec_t *linearcache = &mock_cache;
         ssize_t idx = lookup_type_idx_linearvalue(linearcache, key1, key, n);
         return (idx < 0) ? NULL : jl_svecref(linearcache, idx);
     }

@@ -80,25 +80,31 @@ void MultiMethodCollide5D<struct Object.Spaceship* f1,
     collide_saaaa_5d++;
 }
 
+Figure.rect g_fr;
+Figure.trian g_ft;
+
 struct Figure* get_figure(int i)
 {
     if (i == 1) {
-        return create_spec(Figure.rect);
+        return (struct Figure*)&g_fr;
     }
     if (i == 2) {
-        return create_spec(Figure.trian);
+        return (struct Figure*)&g_ft;
     }
 
     exit(EXIT_FAILURE);
 }
 
+Object.Spaceship g_os;
+Object.Asteroid  g_oa;
+
 struct Object* get_space_object(int i)
 {
     if (i == 1) {
-        return create_spec(Object.Spaceship);
+        return (struct Object*)&g_os;
     }
     if (i == 2) {
-        return create_spec(Object.Asteroid);
+        return (struct Object*)&g_oa;
     }
 
     exit(EXIT_FAILURE);
