@@ -28,17 +28,36 @@ public:
     virtual void visit(class ElementB& visitor);
 };
 
-class Shape3DVisitor;
-// Base interface
+
+class Rectangle3D;
+class Triangle3D;
+class Circle3D;
+
 class Shape3D {
 public:
-    virtual void collide(Shape3D* s2, Shape3D* s3, Shape3DVisitor& visitor) = 0;
-    virtual void acceptAsSecond(Shape3D* s1, Shape3D* s3, Shape3DVisitor& visitor) = 0;
-    virtual void acceptAsThird(Shape3D* s1, Shape3D* s2, Shape3DVisitor& visitor) = 0;
+    // Invoked as s1
+    virtual void collide(Shape3D* s2, Shape3D* s3) = 0;
+
+    // Invoked as s2
+    virtual void collide(Rectangle3D& s1, Shape3D* s3) = 0;
+    virtual void collide(Triangle3D& s1, Shape3D* s3) = 0;
+    virtual void collide(Circle3D& s1, Shape3D* s3) = 0;
+
+    // Invoked as s3
+    virtual void collide(Rectangle3D& s1, Rectangle3D& s2) = 0;
+    virtual void collide(Rectangle3D& s1, Triangle3D& s2) = 0;
+    virtual void collide(Rectangle3D& s1, Circle3D& s2) = 0;
+
+    virtual void collide(Triangle3D& s1, Rectangle3D& s2) = 0;
+    virtual void collide(Triangle3D& s1, Triangle3D& s2) = 0;
+    virtual void collide(Triangle3D& s1, Circle3D& s2) = 0;
+
+    virtual void collide(Circle3D& s1, Rectangle3D& s2) = 0;
+    virtual void collide(Circle3D& s1, Triangle3D& s2) = 0;
+    virtual void collide(Circle3D& s1, Circle3D& s2) = 0;
+
     virtual ~Shape3D() = default;
 };
-
-void collide3D(Shape3D& s1, Shape3D& s2, Shape3D& s3);
 
 
 Element* get_element(int i);
