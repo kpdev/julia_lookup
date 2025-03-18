@@ -60,6 +60,7 @@ endif()
 
 if(BUILD_TESTING)
     add_executable(test_lookup_generic
+        util.h
         test_lookup_generic.c
         test_lookup_generic.h
         test_lookup_generic_impl.c
@@ -81,6 +82,7 @@ if (BUILD_JULIA)
 endif()
 
     add_executable(test_visitor
+        util.h
         oop/visitor.cpp
         oop/visitor3d.cpp
         oop/measure.cpp
