@@ -26,23 +26,147 @@ typedef struct {
     double c;
 } Triangle;
 
-// Handler declarations
-void handle_ccc(Circle *c1, Circle *c2, Circle *c3);
-void handle_ccr(Circle *c1, Circle *c2, Rectangle *r3);
-void handle_crc(Circle *c1, Rectangle *r2, Circle *c3);
-void handle_crr(Circle *c1, Rectangle *r2, Rectangle *r3);
-void handle_rcc(Rectangle *r1, Circle *c2, Circle *c3);
-void handle_rcr(Rectangle *r1, Circle *c2, Rectangle *r3);
-void handle_rrc(Rectangle *r1, Rectangle *r2, Circle *c3);
-void handle_rrr(Rectangle *r1, Rectangle *r2, Rectangle *r3);
-void handle_tcc(Triangle *r1, Circle *c2, Circle *c3);
-void handle_tcr(Triangle *r1, Circle *c2, Rectangle *r3);
-void handle_trc(Triangle *r1, Rectangle *r2, Circle *c3);
-void handle_trr(Triangle *r1, Rectangle *r2, Rectangle *r3);
 
-void handle_ttc(Triangle *r1, Triangle *c2, Circle *r3);
-void handle_ttr(Triangle *r1, Triangle *r2, Rectangle *c3);
-void handle_ttt(Triangle *r1, Triangle *r2, Triangle *r3);
+volatile int
+    ccc = 0,
+    ccr = 0,
+    cct = 0,
+    crc = 0,
+    crr = 0,
+    crt = 0,
+    ctc = 0,
+    ctr = 0,
+    ctt = 0,
+    rcc = 0,
+    rcr = 0,
+    rct = 0,
+    rrc = 0,
+    rrr = 0,
+    rrt = 0,
+    rtc = 0,
+    rtr = 0,
+    rtt = 0,
+    tcc = 0,
+    tcr = 0,
+    tct = 0,
+    trc = 0,
+    trr = 0,
+    trt = 0,
+    ttc = 0,
+    ttr = 0,
+    ttt = 0;
+
+// Handler implementations
+void handle_ccc(Circle *c1, Circle *c2, Circle *c3) {
+    ccc++;
+}
+
+void handle_ccr(Circle *c1, Circle *c2, Rectangle *r3) {
+    ccr++;
+}
+
+void handle_cct(Circle *c1, Circle *c2, Triangle* s3) {
+    cct++;
+}
+
+void handle_crc(Circle *c1, Rectangle *r2, Circle *c3) {
+    crc++;
+}
+
+void handle_crr(Circle *c1, Rectangle *r2, Rectangle *r3) {
+    crr++;
+}
+
+void handle_crt(Circle *c1, Rectangle *r2, Triangle *r3) {
+    crt++;
+}
+
+void handle_ctc(Circle *c1, Triangle *r2, Circle *c3) {
+    ctc++;
+}
+
+void handle_ctr(Circle *c1, Triangle *r2, Rectangle *r3) {
+    ctr++;
+}
+
+void handle_ctt(Circle *c1, Triangle *r2, Triangle *r3) {
+    ctt++;
+}
+
+void handle_rcc(Rectangle *r1, Circle *c2, Circle *c3) {
+    rcc++;
+}
+
+void handle_rcr(Rectangle *r1, Circle *c2, Rectangle *r3) {
+    rcr++;
+}
+
+void handle_rct(Rectangle *r1, Circle *c2, Triangle *r3) {
+    rct++;
+}
+
+void handle_rrc(Rectangle *r1, Rectangle *r2, Circle *c3) {
+    rrc++;
+}
+
+void handle_rrr(Rectangle *r1, Rectangle *r2, Rectangle *r3) {
+    rrr++;
+}
+
+void handle_rrt(Rectangle *r1, Rectangle *r2, Triangle *r3) {
+    rrt++;
+}
+
+
+void handle_rtc(Rectangle *r1, Triangle *r2, Circle *c3) {
+    rtc++;
+}
+
+void handle_rtr(Rectangle *r1, Triangle *r2, Rectangle *r3) {
+    rtr++;
+}
+
+void handle_rtt(Rectangle *r1, Triangle *r2, Triangle *r3) {
+    rtt++;
+}
+
+
+void handle_tcc(Triangle *r1, Circle *c2, Circle *c3) {
+    tcc++;
+}
+
+void handle_tcr(Triangle *r1, Circle *c2, Rectangle *r3) {
+    tcr++;
+}
+
+void handle_tct(Triangle *r1, Circle *c2, Triangle *r3) {
+    tct++;
+}
+
+void handle_trc(Triangle *r1, Rectangle *r2, Circle *c3) {
+    trc++;
+}
+
+void handle_trr(Triangle *r1, Rectangle *r2, Rectangle *r3) {
+    trr++;
+}
+
+void handle_trt(Triangle *r1, Rectangle *r2, Triangle *r3) {
+    trt++;
+}
+
+void handle_ttc(Triangle *r1, Triangle *c2, Circle *r3) {
+    ttc++;
+}
+
+void handle_ttr(Triangle *r1, Triangle *r2, Rectangle *c3) {
+    ttr++;
+}
+
+void handle_ttt(Triangle *r1, Triangle *r2, Triangle *r3) {
+    ttt++;
+}
+
 
 void CollideSwitch3D(ShapeSwitch3D *s1, ShapeSwitch3D *s2, ShapeSwitch3D *s3) {
     // First level switch - s1 type
@@ -61,6 +185,9 @@ void CollideSwitch3D(ShapeSwitch3D *s1, ShapeSwitch3D *s2, ShapeSwitch3D *s3) {
                         case RECTANGLE:
                             handle_ccr(c1, c2, (Rectangle *)s3);
                             break;
+                        case TRIANGLE:
+                            handle_cct(c1, c2, (Triangle *)s3);
+                            break;
                     }
                     break;
                 }
@@ -73,6 +200,25 @@ void CollideSwitch3D(ShapeSwitch3D *s1, ShapeSwitch3D *s2, ShapeSwitch3D *s3) {
                             break;
                         case RECTANGLE:
                             handle_crr(c1, r2, (Rectangle *)s3);
+                            break;
+                        case TRIANGLE:
+                            handle_crt(c1, r2, (Triangle *)s3);
+                            break;
+                    }
+                    break;
+                }
+                case TRIANGLE: {
+                    Triangle *r2 = (Triangle *)s2;
+                    // Third level switch - s3 type
+                    switch(s3->type) {
+                        case CIRCLE:
+                            handle_ctc(c1, r2, (Circle *)s3);
+                            break;
+                        case RECTANGLE:
+                            handle_ctr(c1, r2, (Rectangle *)s3);
+                            break;
+                        case TRIANGLE:
+                            handle_ctt(c1, r2, (Triangle *)s3);
                             break;
                     }
                     break;
@@ -94,6 +240,9 @@ void CollideSwitch3D(ShapeSwitch3D *s1, ShapeSwitch3D *s2, ShapeSwitch3D *s3) {
                         case RECTANGLE:
                             handle_rcr(r1, c2, (Rectangle *)s3);
                             break;
+                        case TRIANGLE:
+                            handle_rct(r1, c2, (Triangle *)s3);
+                            break;
                     }
                     break;
                 }
@@ -106,6 +255,25 @@ void CollideSwitch3D(ShapeSwitch3D *s1, ShapeSwitch3D *s2, ShapeSwitch3D *s3) {
                             break;
                         case RECTANGLE:
                             handle_rrr(r1, r2, (Rectangle *)s3);
+                            break;
+                        case TRIANGLE:
+                            handle_rrt(r1, r2, (Triangle *)s3);
+                            break;
+                    }
+                    break;
+                }
+                case TRIANGLE: {
+                    Triangle *r2 = (Triangle *)s2;
+                    // Third level switch - s3 type
+                    switch(s3->type) {
+                        case CIRCLE:
+                            handle_rtc(r1, r2, (Circle *)s3);
+                            break;
+                        case RECTANGLE:
+                            handle_rtr(r1, r2, (Rectangle *)s3);
+                            break;
+                        case TRIANGLE:
+                            handle_rtt(r1, r2, (Triangle *)s3);
                             break;
                     }
                     break;
@@ -128,6 +296,9 @@ void CollideSwitch3D(ShapeSwitch3D *s1, ShapeSwitch3D *s2, ShapeSwitch3D *s3) {
                         case RECTANGLE:
                             handle_tcr(r1, c2, (Rectangle *)s3);
                             break;
+                        case TRIANGLE:
+                            handle_tct(r1, c2, (Triangle *)s3);
+                            break;
                     }
                     break;
                 }
@@ -140,6 +311,9 @@ void CollideSwitch3D(ShapeSwitch3D *s1, ShapeSwitch3D *s2, ShapeSwitch3D *s3) {
                             break;
                         case RECTANGLE:
                             handle_trr(r1, r2, (Rectangle *)s3);
+                            break;
+                        case TRIANGLE:
+                            handle_trt(r1, r2, (Triangle *)s3);
                             break;
                     }
                     break;
@@ -165,119 +339,6 @@ void CollideSwitch3D(ShapeSwitch3D *s1, ShapeSwitch3D *s2, ShapeSwitch3D *s3) {
         }
     }
 }
-
-volatile int
-    ccc = 0,
-    ccr = 0,
-    crc = 0,
-    crr = 0,
-    rcc = 0,
-    rcr = 0,
-    rrc = 0,
-    rrr = 0,
-    tcc = 0,
-    tcr = 0,
-    trc = 0,
-    trr = 0,
-    ttc = 0,
-    ttr = 0,
-    ttt = 0;
-// Handler implementations
-void handle_ccc(Circle *c1, Circle *c2, Circle *c3) {
-    ccc++;
-}
-
-void handle_ccr(Circle *c1, Circle *c2, Rectangle *r3) {
-    ccr++;
-}
-
-void handle_crc(Circle *c1, Rectangle *r2, Circle *c3) {
-    crc++;
-}
-
-void handle_crr(Circle *c1, Rectangle *r2, Rectangle *r3) {
-    crr++;
-}
-
-void handle_rcc(Rectangle *r1, Circle *c2, Circle *c3) {
-    rcc++;
-}
-
-void handle_rcr(Rectangle *r1, Circle *c2, Rectangle *r3) {
-    rcr++;
-}
-
-void handle_rrc(Rectangle *r1, Rectangle *r2, Circle *c3) {
-    rrc++;
-}
-
-void handle_rrr(Rectangle *r1, Rectangle *r2, Rectangle *r3) {
-    rrr++;
-}
-
-void handle_tcc(Triangle *r1, Circle *c2, Circle *c3) {
-    tcc++;
-}
-
-void handle_tcr(Triangle *r1, Circle *c2, Rectangle *r3) {
-    tcr++;
-}
-
-void handle_trc(Triangle *r1, Rectangle *r2, Circle *c3) {
-    trc++;
-}
-
-void handle_trr(Triangle *r1, Rectangle *r2, Rectangle *r3) {
-    trr++;
-}
-
-void handle_ttc(Triangle *r1, Triangle *c2, Circle *r3) {
-    ttc++;
-}
-
-void handle_ttr(Triangle *r1, Triangle *r2, Rectangle *c3) {
-    ttr++;
-}
-
-void handle_ttt(Triangle *r1, Triangle *r2, Triangle *r3) {
-    ttt++;
-}
-
-// Initialization functions
-// void init_circle(Circle *c, double radius) {
-//     c->base.type = CIRCLE;
-//     c->radius = radius;
-// }
-
-// void init_rectangle(Rectangle *r, double width, double height) {
-//     r->base.type = RECTANGLE;
-//     r->width = width;
-//     r->height = height;
-// }
-
-// int main() {
-//     Circle c1, c2, c3;
-//     Rectangle r1, r2, r3;
-
-//     init_circle(&c1, 2.0);
-//     init_circle(&c2, 3.0);
-//     init_circle(&c3, 4.0);
-//     init_rectangle(&r1, 5.0, 6.0);
-//     init_rectangle(&r2, 7.0, 8.0);
-//     init_rectangle(&r3, 9.0, 10.0);
-
-//     // Test all combinations
-//     Collide((ShapeSwitch3D *)&c1, (ShapeSwitch3D *)&c2, (ShapeSwitch3D *)&c3);  // CCC
-//     Collide((ShapeSwitch3D *)&c1, (ShapeSwitch3D *)&c2, (ShapeSwitch3D *)&r1);  // CCR
-//     Collide((ShapeSwitch3D *)&c1, (ShapeSwitch3D *)&r1, (ShapeSwitch3D *)&c2);  // CRC
-//     Collide((ShapeSwitch3D *)&c1, (ShapeSwitch3D *)&r1, (ShapeSwitch3D *)&r2);  // CRR
-//     Collide((ShapeSwitch3D *)&r1, (ShapeSwitch3D *)&c1, (ShapeSwitch3D *)&c2);  // RCC
-//     Collide((ShapeSwitch3D *)&r1, (ShapeSwitch3D *)&c1, (ShapeSwitch3D *)&r2);  // RCR
-//     Collide((ShapeSwitch3D *)&r1, (ShapeSwitch3D *)&r2, (ShapeSwitch3D *)&c1);  // RRC
-//     Collide((ShapeSwitch3D *)&r1, (ShapeSwitch3D *)&r2, (ShapeSwitch3D *)&r3);  // RRR
-
-//     return 0;
-// }
 
 
 // Initialization functions
