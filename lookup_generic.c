@@ -4,6 +4,12 @@
 #include "julia_internal.h"
 #include "lookup_generic.h"
 
+jl_methtable_t* mt_mock_data;
+jl_array_t* jl_an_empty_vec_any_mock_data;
+jl_datatype_t* jl_typemap_level_type_mock_data;
+
+struct _jl_value_t {};
+
 #define N_CALL_CACHE 4096
 _Atomic(jl_typemap_entry_t*) call_cache[N_CALL_CACHE];
 static _Atomic(uint8_t) pick_which[N_CALL_CACHE];
@@ -113,7 +119,7 @@ int jl_tuple1_isa(jl_value_t *child1, jl_value_t **child, size_t cl, jl_datatype
     jl_value_t *tu = (jl_value_t*)arg_type_tuple(child1, child, cl);
     int ans;
     // JL_GC_PUSH1(&tu);
-    ans = jl_subtype(tu, (jl_value_t*)pdt);
+    ans = 0;// jl_subtype(tu, (jl_value_t*)pdt);
     // JL_GC_POP();
     return ans;
 }
@@ -253,10 +259,10 @@ static unsigned type_hash(jl_value_t *kj, int *failed)
         jl_datatype_t *dt = (jl_datatype_t*)uw;
         unsigned hash = dt->hash;
         if (!hash) {
-            if (!*failed) {
-                *failed = 1;
-                return 0;
-            }
+            // if (!*failed) {
+            //     *failed = 1;
+            //     return 0;
+            // }
             // compute a hash now, only for the parent object we are putting in the cache
             hash = typekey_hash(dt->name, jl_svec_data(dt->parameters), jl_svec_len(dt->parameters), *failed);
         }
@@ -1474,6 +1480,8 @@ jl_tupletype_t *jl_inst_arg_tuple_type(jl_value_t *arg1, jl_value_t **args, size
     if (tt == NULL) {
         size_t i;
         // jl_svec_t *params = jl_alloc_svec(nargs);
+        jl_typemap_entry_t* tmp_cache = (jl_typemap_entry_t*)mt_mock_data->cache;
+        jl_svec_t *params = tmp_cache->sig->parameters;
         // JL_GC_PUSH1(&params);
         for (i = 0; i < nargs; i++) {
             jl_value_t *ai = (i == 0 ? arg1 : args[i - 1]);
@@ -1489,6 +1497,7 @@ jl_tupletype_t *jl_inst_arg_tuple_type(jl_value_t *arg1, jl_value_t **args, size
             }
             // jl_svecset(params, i, ai);
         }
+        tt = (jl_tupletype_t*)arg1;
         // tt = (jl_datatype_t*)inst_datatype_inner(jl_anytuple_type, params, jl_svec_data(params), nargs, NULL, NULL, 1, 0);
         // JL_GC_POP();
     }
@@ -1556,12 +1565,6 @@ int sig_match_fast(jl_value_t *arg1t, jl_value_t **args, jl_value_t **sig, size_
     return 1;
 }
 
-
-jl_methtable_t* mt_mock_data;
-jl_array_t* jl_an_empty_vec_any_mock_data;
-jl_datatype_t* jl_typemap_level_type_mock_data;
-
-struct _jl_value_t {};
 
 // Main function for search generic method
 JL_DLLEXPORT jl_method_t *jl_lookup_generic_(jl_value_t *F, jl_value_t **args, uint32_t nargs,
@@ -1644,4 +1647,40 @@ have_entry:
 
     // Doing full search
     return m;
+}
+
+JL_DLLEXPORT jl_method_t *jl_lookup_generic_FAST(jl_value_t *F, jl_value_t **args, uint32_t nargs,
+                                                 uint32_t callsite, size_t world) {
+    jl_method_t *m = NULL;
+
+    jl_value_t *FT = jl_to_typeof(((((jl_taggedvalue_t*)((char*)(F) - sizeof(jl_taggedvalue_t)))->header) & ~(uintptr_t)15));
+
+    uint32_t cache_idx[4] = {
+        (callsite) & (N_CALL_CACHE - 1),
+        (callsite >> 8) & (N_CALL_CACHE - 1),
+        (callsite >> 16) & (N_CALL_CACHE - 1),
+        (callsite >> 24 | callsite << 8) & (N_CALL_CACHE - 1)};
+
+    // Search in Last Caller cache
+    jl_typemap_entry_t *entry = NULL;
+
+    int i;
+
+    #define LOOP_BODY(_i) do { \
+        i = _i; \
+        entry = jl_atomic_load_relaxed(&call_cache[cache_idx[i]]); \
+        if (entry && nargs == jl_svec_len(entry->sig->parameters) && \
+            sig_match_fast(FT, args, jl_svec_data(entry->sig->parameters), nargs) && \
+            world >= entry->min_world && world <= entry->max_world) { \
+            goto have_entry; \
+        } \
+    } while (0);
+    LOOP_BODY(0);
+    LOOP_BODY(1);
+    LOOP_BODY(2);
+    LOOP_BODY(3);
+    #undef LOOP_BODY
+
+have_entry:
+    return entry;
 }

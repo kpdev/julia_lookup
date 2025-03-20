@@ -210,10 +210,11 @@ START_TEST_FUNC_WITH_PARAM(Julia)
     uint32_t callsite = 0;
     size_t world = 0; // mock for test
 
-    init_mock_data_for_test(nargs);
-    create_test_args(&args, nargs);
+    jl_value_t *F = NULL;
 
-    jl_value_t *F = malloc(sizeof(jl_value_t));
+    create_test_args(&args, nargs);
+    init_mock_data_for_test(nargs, &F, args);
+
     jl_method_t *method = NULL;
     if (F == NULL) {
         exit(EXIT_FAILURE);
@@ -228,11 +229,47 @@ START_TEST_FUNC_WITH_PARAM(Julia)
     START_LOOP()
         method = jl_lookup_generic_(F, args, nargs, callsite, world);
         if (method) {
+            exit(1);
             count++;
         }
     END_MAIN_LOOP()
 
 END_TEST_FUNC_WITH_PARAM(Julia)
+
+
+START_TEST_FUNC(JuliaFast)
+
+    jl_value_t **args;
+    uint32_t nargs = 2;
+    uint32_t callsite = 0;
+    size_t world = 0; // mock for test
+
+    jl_value_t *F = NULL;
+
+    create_test_args(&args, nargs);
+    init_mock_data_for_test(nargs, &F, args);
+
+    jl_method_t *method = NULL;
+    if (F == NULL) {
+        exit(EXIT_FAILURE);
+    }
+
+    volatile int count = 0;
+
+    START_LOOP()
+        count++;
+    END_EMPTY_LOOP(JuliaFast)
+
+    START_LOOP()
+        method = jl_lookup_generic_FAST(F, args, nargs, callsite, world);
+        if (method) {
+            count++;
+        }
+    END_MAIN_LOOP()
+
+END_TEST_FUNC(JuliaFast)
+
+
 #endif
 
 
@@ -273,6 +310,7 @@ int main(int main_argc, char** main_argv) {
         test_Julia(number_of_iters, 2);
         test_Julia(number_of_iters, 3);
         test_Julia(number_of_iters, 5);
+        test_JuliaFast(number_of_iters);
 #endif
     }
 

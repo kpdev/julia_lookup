@@ -10,6 +10,9 @@ extern "C" {
 JL_DLLEXPORT jl_method_t *jl_lookup_generic_(jl_value_t *F, jl_value_t **args, 
                                             uint32_t nargs, uint32_t callsite, size_t world);
 
+JL_DLLEXPORT jl_method_t *jl_lookup_generic_FAST(jl_value_t *F, jl_value_t **args,
+                                                uint32_t nargs, uint32_t callsite, size_t world);
+
 #ifdef __cplusplus
 }
 #endif
