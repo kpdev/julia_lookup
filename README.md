@@ -1,6 +1,19 @@
 # julia_lookup
 
-## Download and build
+## Build prerequisites
+
+As a first step it is needed to build clang with procedural-parametric extension
+https://github.com/kpdev/llvm-project/tree/pp-extension-v2?tab=readme-ov-file#build-procedural-parametric-extension
+
+And make symbolic link to this version of clang in the following way:
+
+```
+ln -s /path/to/clang /usr/bin/ppclang
+```
+
+After that `ppclang` will be available in your environment (it is used in build scripts for benchmarks)
+
+## Download and build 
 
 ```
 $ git clone https://github.com/JuliaLang/julia.git
