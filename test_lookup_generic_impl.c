@@ -121,6 +121,40 @@ void MultiMethodCollide5D<struct Object.Spaceship* f1,
     collide_saaaa_5d++;
 }
 
+
+volatile int collide_x10_default = 0;
+volatile int collide_x10_spec = 0;
+
+void MultiMethodCollide10D<struct Object* f1,
+                           struct Object* f2,
+                           struct Object* f3,
+                           struct Object* f4,
+                           struct Object* f5,
+                           struct Object* f6,
+                           struct Object* f7,
+                           struct Object* f8,
+                           struct Object* f9,
+                           struct Object* f10>()
+{
+    collide_x10_default++;
+}
+
+void MultiMethodCollide10D<struct Object.Spaceship* f1,
+                           struct Object.Asteroid* f2,
+                           struct Object.Asteroid* f3,
+                           struct Object.Asteroid* f4,
+                           struct Object.Asteroid* f5,
+                           struct Object.Asteroid* f6,
+                           struct Object.Asteroid* f7,
+                           struct Object.Asteroid* f8,
+                           struct Object.Asteroid* f9,
+                           struct Object.Asteroid* f10>()
+{
+    collide_x10_spec++;
+}
+
+
+
 Figure.rect g_fr;
 Figure.trian g_ft;
 

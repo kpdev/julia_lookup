@@ -32,6 +32,17 @@ void MultiMethodCollide5D<struct Object* f1,
                           struct Object* f3,
                           struct Object* f4,
                           struct Object* f5>();
+void MultiMethodCollide10D<struct Object* f1,
+                           struct Object* f2,
+                           struct Object* f3,
+                           struct Object* f4,
+                           struct Object* f5,
+                           struct Object* f6,
+                           struct Object* f7,
+                           struct Object* f8,
+                           struct Object* f9,
+                           struct Object* f10>();
+
 
 struct Figure* get_figure(int i);
 

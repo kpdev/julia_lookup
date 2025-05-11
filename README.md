@@ -31,7 +31,7 @@ $ make
 ## Build with Julia enabled
 
 ```
-$ cmake -S .. -B . -DCMAKE_BUILD_TYPE=Release -DBUILD_JULIA
+$ cmake -S .. -B . -DCMAKE_BUILD_TYPE=Release -DBUILD_JULIA=ON
 ```
 
 
@@ -57,4 +57,68 @@ $ ./test_visitor 1000000000
 number_of_iters = 1000000000
 Time elapsed Visitor: 3.710451
 Time elapsed Visitor3D: 4.572742
+```
+
+-------------------------
+
+Unbuffered writing to a file
+(by new lines `-oL`, at all `-o0`)
+```
+stdbuf -oL ./test_lookup_generic 100000000 1 > ./log_visitor_100.txt
+```
+
+------------------------
+
+## Control CPU correctness:
+
+### Get description of CPUs on the machine
+
+```
+lscpu
+```
+
+### Setup specific CPU to new process
+
+```
+taskset --cpu-list 0 ./test_lookup_generic 1000000000
+```
+
+### Get PSR (the latest CPU, on which the process was executed)
+
+```
+ps -mo pid,tid,%cpu,psr -p `pgrep test_lookup`
+```
+
+or
+
+```
+cat /proc/$(pgrep test_lookup)/stat | awk '{print "Last CPU: " $40}'
+```
+
+https://www.kernel.org/doc/Documentation/filesystems/proc.txt
+
+-----------------
+
+## Control CPU frequency:
+
+### List of supported frequences for specific CPU (#0 in example)
+
+```
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+```
+
+or
+
+```
+cpufreq-info
+```
+
+### Lock specific frequency
+
+```
+sudo cpufreq-set -c 0 -g userspace
+```
+
+```
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
 ```

@@ -1567,9 +1567,9 @@ int sig_match_fast(jl_value_t *arg1t, jl_value_t **args, jl_value_t **sig, size_
 
 
 // Main function for search generic method
-JL_DLLEXPORT jl_method_t *jl_lookup_generic_(jl_value_t *F, jl_value_t **args, uint32_t nargs,
+JL_DLLEXPORT jl_method_instance_t *jl_lookup_generic_(jl_value_t *F, jl_value_t **args, uint32_t nargs,
                                                 uint32_t callsite, size_t world) {
-    jl_method_t *m = NULL;
+    jl_method_instance_t *m = NULL;
 
     jl_value_t *FT = jl_to_typeof(((((jl_taggedvalue_t*)((char*)(F) - sizeof(jl_taggedvalue_t)))->header) & ~(uintptr_t)15));
 
@@ -1646,12 +1646,15 @@ JL_DLLEXPORT jl_method_t *jl_lookup_generic_(jl_value_t *F, jl_value_t **args, u
 have_entry:
 
     // Doing full search
+    if (entry != NULL) {
+        m = entry->func.linfo;
+    }
     return m;
 }
 
-JL_DLLEXPORT jl_method_t *jl_lookup_generic_FAST(jl_value_t *F, jl_value_t **args, uint32_t nargs,
+JL_DLLEXPORT jl_method_instance_t * jl_lookup_generic_FAST(jl_value_t *F, jl_value_t **args, uint32_t nargs,
                                                  uint32_t callsite, size_t world) {
-    jl_method_t *m = NULL;
+    jl_method_instance_t * m = NULL;
 
     jl_value_t *FT = jl_to_typeof(((((jl_taggedvalue_t*)((char*)(F) - sizeof(jl_taggedvalue_t)))->header) & ~(uintptr_t)15));
 
@@ -1682,5 +1685,5 @@ JL_DLLEXPORT jl_method_t *jl_lookup_generic_FAST(jl_value_t *F, jl_value_t **arg
     #undef LOOP_BODY
 
 have_entry:
-    return entry;
+    return entry ? entry->func.linfo : NULL;
 }

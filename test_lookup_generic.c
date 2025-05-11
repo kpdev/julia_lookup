@@ -96,6 +96,61 @@ START_TEST_FUNC(PP5)
 END_TEST_FUNC(PP5)
 
 
+START_TEST_FUNC(PP10)
+
+    START_LOOP()
+        int r1 = 1 + rand() % 2;
+        int r2 = 1 + rand() % 2;
+        int r3 = 1 + rand() % 2;
+        int r4 = 1 + rand() % 2;
+        int r5 = 1 + rand() % 2;
+        int r6 = 1 + rand() % 2;
+        int r7 = 1 + rand() % 2;
+        int r8 = 1 + rand() % 2;
+        int r9 = 1 + rand() % 2;
+        int r10 = 1 + rand() % 2;
+        struct Object* s1 = get_space_object(r1);
+        struct Object* a2  = get_space_object(r2);
+        struct Object* a3  = get_space_object(r3);
+        struct Object* a4  = get_space_object(r4);
+        struct Object* a5  = get_space_object(r5);
+        struct Object* a6 = get_space_object(r6);
+        struct Object* a7  = get_space_object(r7);
+        struct Object* a8  = get_space_object(r8);
+        struct Object* a9  = get_space_object(r9);
+        struct Object* a10  = get_space_object(r10);
+        (void)s1; (void)a2; (void)a3; (void)a4; (void)a5;
+        (void)a6; (void)a7; (void)a8; (void)a9; (void)a10;
+    END_EMPTY_LOOP(PP10)
+
+    START_LOOP()
+        int r1 = 1 + rand() % 2;
+        int r2 = 1 + rand() % 2;
+        int r3 = 1 + rand() % 2;
+        int r4 = 1 + rand() % 2;
+        int r5 = 1 + rand() % 2;
+        int r6 = 1 + rand() % 2;
+        int r7 = 1 + rand() % 2;
+        int r8 = 1 + rand() % 2;
+        int r9 = 1 + rand() % 2;
+        int r10 = 1 + rand() % 2;
+        struct Object* s1 = get_space_object(r1);
+        struct Object* a2  = get_space_object(r2);
+        struct Object* a3  = get_space_object(r3);
+        struct Object* a4  = get_space_object(r4);
+        struct Object* a5  = get_space_object(r5);
+        struct Object* a6 = get_space_object(r6);
+        struct Object* a7  = get_space_object(r7);
+        struct Object* a8  = get_space_object(r8);
+        struct Object* a9  = get_space_object(r9);
+        struct Object* a10  = get_space_object(r10);
+
+        MultiMethodCollide10D<s1, a2, a3, a4, a5, a6, a7, a8, a9, a10>();
+    END_MAIN_LOOP()
+
+END_TEST_FUNC(PP10)
+
+
 DEF_TEST_FUNC(PPDispatch,
 
     START_LOOP()
@@ -215,7 +270,7 @@ START_TEST_FUNC_WITH_PARAM(Julia)
     create_test_args(&args, nargs);
     init_mock_data_for_test(nargs, &F, args);
 
-    jl_method_t *method = NULL;
+    jl_method_instance_t *method = NULL;
     if (F == NULL) {
         exit(EXIT_FAILURE);
     }
@@ -249,7 +304,7 @@ START_TEST_FUNC(JuliaFast)
     create_test_args(&args, nargs);
     init_mock_data_for_test(nargs, &F, args);
 
-    jl_method_t *method = NULL;
+    jl_method_instance_t *method = NULL;
     if (F == NULL) {
         exit(EXIT_FAILURE);
     }
@@ -300,17 +355,18 @@ int main(int main_argc, char** main_argv) {
         test_PP2(number_of_iters);
         test_PP3(number_of_iters);
         test_PP5(number_of_iters);
-        test_PPDispatch(number_of_iters);
-        test_ProcedVTable(number_of_iters);
+        test_PP10(number_of_iters);
         test_ProcedSwitchX2(number_of_iters);
         test_ProcedSwitchX3(number_of_iters);
         test_ProcedSwitchX10(number_of_iters);
+        test_PPDispatch(number_of_iters);
+        test_ProcedVTable(number_of_iters);
 
 #ifdef BUILD_JULIA
+        test_JuliaFast(number_of_iters);
         test_Julia(number_of_iters, 2);
         test_Julia(number_of_iters, 3);
         test_Julia(number_of_iters, 5);
-        test_JuliaFast(number_of_iters);
 #endif
     }
 
