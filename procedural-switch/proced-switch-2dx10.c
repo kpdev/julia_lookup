@@ -114,6 +114,9 @@ switch (o2->type) { \
 } \
 break;
 
+void CollideSwitchX10_Empty(struct Obj *, struct Obj *)
+{}
+
 void CollideSwitchX10(struct Obj *o1, struct Obj *o2)
 {
     switch (o1->type) {

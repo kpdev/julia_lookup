@@ -36,6 +36,9 @@ void handle_rectangle_rectangle(RectangleSwitch *a, RectangleSwitch *b) {
     rr_sw++;
 }
 
+void CollideSwitch_Empty(ShapeSwitch *, ShapeSwitch *)
+{}
+
 // Main dispatch function
 void CollideSwitch(ShapeSwitch *s1, ShapeSwitch *s2) {
     switch(s1->type) {

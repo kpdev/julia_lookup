@@ -79,3 +79,5 @@ struct Shape* get_shape(int i)
     exit(EXIT_FAILURE);
 }
 
+void collide_empty(Shape*, Shape*)
+{}

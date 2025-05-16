@@ -1652,6 +1652,51 @@ have_entry:
     return m;
 }
 
+JL_DLLEXPORT jl_method_instance_t *jl_lookup_generic_EMPTY(jl_value_t *, jl_value_t **,
+    uint32_t, uint32_t, size_t)
+{
+    return NULL;
+}
+
+JL_DLLEXPORT jl_method_instance_t *jl_lookup_generic_FAST_1(jl_value_t *F, jl_value_t **args,
+                                                            uint32_t nargs, uint32_t callsite, size_t world) {
+
+    jl_method_instance_t * m = NULL;
+
+    jl_value_t *FT = jl_to_typeof(((((jl_taggedvalue_t*)((char*)(F) - sizeof(jl_taggedvalue_t)))->header) & ~(uintptr_t)15));
+
+    uint32_t cache_idx[4] = {
+        (callsite) & (N_CALL_CACHE - 1),
+        (callsite >> 8) & (N_CALL_CACHE - 1),
+        (callsite >> 16) & (N_CALL_CACHE - 1),
+        (callsite >> 24 | callsite << 8) & (N_CALL_CACHE - 1)};
+
+    // Search in Last Caller cache
+    jl_typemap_entry_t *entry = NULL;
+
+    int i;
+
+    #define LOOP_BODY(_i) do { \
+        i = _i; \
+        entry = jl_atomic_load_relaxed(&call_cache[cache_idx[i]]); \
+        if (entry && nargs == jl_svec_len(entry->sig->parameters) && \
+            sig_match_fast(FT, args, jl_svec_data(entry->sig->parameters), nargs) && \
+            world >= entry->min_world && world <= entry->max_world) { \
+            goto have_entry; \
+        } \
+    } while (0);
+    LOOP_BODY(0);
+    // LOOP_BODY(1);
+    // LOOP_BODY(2);
+    // LOOP_BODY(3);
+    #undef LOOP_BODY
+
+have_entry:
+    return entry ? entry->func.linfo : NULL;
+                                                            
+}
+
+
 JL_DLLEXPORT jl_method_instance_t * jl_lookup_generic_FAST(jl_value_t *F, jl_value_t **args, uint32_t nargs,
                                                  uint32_t callsite, size_t world) {
     jl_method_instance_t * m = NULL;

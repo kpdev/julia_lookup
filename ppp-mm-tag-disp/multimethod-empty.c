@@ -29,3 +29,6 @@ void MultimethodEmpty<struct Figure.rect* r1>(Figure* f2) {
 void MultimethodEmpty<struct Figure.trian* t1>(Figure* f2) {
     MultimethodEmptyFirstTrian<f2>(t1);
 }
+
+void MultimethodEmpty_Empty(struct Figure*, struct Figure*)
+{}

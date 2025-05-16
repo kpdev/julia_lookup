@@ -7,10 +7,16 @@
 extern "C" {
 #endif
 
+JL_DLLEXPORT jl_method_instance_t *jl_lookup_generic_EMPTY(jl_value_t *F, jl_value_t **args,
+    uint32_t nargs, uint32_t callsite, size_t world);
+
 JL_DLLEXPORT jl_method_instance_t *jl_lookup_generic_(jl_value_t *F, jl_value_t **args,
                                             uint32_t nargs, uint32_t callsite, size_t world);
 
 JL_DLLEXPORT jl_method_instance_t *jl_lookup_generic_FAST(jl_value_t *F, jl_value_t **args,
+                                            uint32_t nargs, uint32_t callsite, size_t world);
+
+JL_DLLEXPORT jl_method_instance_t *jl_lookup_generic_FAST_1(jl_value_t *F, jl_value_t **args,
                                             uint32_t nargs, uint32_t callsite, size_t world);
 
 #ifdef __cplusplus

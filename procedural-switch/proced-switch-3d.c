@@ -167,6 +167,8 @@ void handle_ttt(Triangle *r1, Triangle *r2, Triangle *r3) {
     ttt++;
 }
 
+void CollideSwitch3D_Empty(ShapeSwitch3D *, ShapeSwitch3D *, ShapeSwitch3D *)
+{}
 
 void CollideSwitch3D(ShapeSwitch3D *s1, ShapeSwitch3D *s2, ShapeSwitch3D *s3) {
     // First level switch - s1 type

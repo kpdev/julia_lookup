@@ -1,5 +1,7 @@
 #include "visitor.h"
 
+void collide_empty(Shape3D*, Shape3D*, Shape3D*)
+{}
 
 volatile int 
     ccc_3d = 0,

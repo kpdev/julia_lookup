@@ -20,3 +20,5 @@ struct Shape {
 };
 
 struct Shape* get_shape(int i);
+
+void collide_empty(Shape*, Shape*);

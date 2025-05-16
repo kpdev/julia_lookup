@@ -63,3 +63,6 @@ public:
 Element* get_element(int i);
 
 Shape3D* get_shape3d(int i);
+
+void visit_empty(Element* this_, class Element* visitor);
+void collide_empty(Shape3D* this_, Shape3D* s2, Shape3D* s3);

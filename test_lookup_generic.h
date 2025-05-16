@@ -43,6 +43,14 @@ void MultiMethodCollide10D<struct Object* f1,
                            struct Object* f9,
                            struct Object* f10>();
 
+void MultiMethodCollide2_Empty(struct Object*, struct Object*);
+void MultiMethodCollide3_Empty(struct Object*, struct Object*, struct Object*);
+void MultiMethodCollide5_Empty(struct Object*, struct Object*,
+                               struct Object*, struct Object*, struct Object*);
+void MultiMethodCollide10_Empty(struct Object*, struct Object*,
+                                struct Object*, struct Object*, struct Object*,
+                                struct Object*, struct Object*,
+                                struct Object*, struct Object*, struct Object*);
 
 struct Figure* get_figure(int i);
 

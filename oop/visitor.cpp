@@ -3,6 +3,8 @@
 
 volatile int aa, ab, ba, bb;
 
+void visit_empty(Element*, Element*)
+{}
 
 void ElementA::visit(class Element* visitor) { visitor->visit(*this); }
 

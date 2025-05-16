@@ -22,7 +22,7 @@ Body \
 END_TEST_FUNC(Name)
 
 #define START_LOOP() \
-srand(time(NULL)); \
+srand(1); \
 gettimeofday(&tval_before, NULL); \
 for (int i = 0; i < number_of_iters; i++) {
 

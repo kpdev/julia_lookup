@@ -184,3 +184,16 @@ struct Object* get_space_object(int i)
 
     exit(EXIT_FAILURE);
 }
+
+void MultiMethodCollide2_Empty(struct Object*, struct Object*)
+{}
+void MultiMethodCollide3_Empty(struct Object*, struct Object*, struct Object*)
+{}
+void MultiMethodCollide5_Empty(struct Object*, struct Object*,
+                               struct Object*, struct Object*, struct Object*)
+{}
+void MultiMethodCollide10_Empty(struct Object*, struct Object*,
+                                struct Object*, struct Object*, struct Object*,
+                                struct Object*, struct Object*,
+                                struct Object*, struct Object*, struct Object*)
+{}

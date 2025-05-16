@@ -18,8 +18,7 @@ START_TEST_FUNC(PP2)
         int r2 = 1 + rand() % 2;
         struct Object* spaceship = get_space_object(r1);
         struct Object* asteroid  = get_space_object(r2);
-        (void)spaceship;
-        (void)asteroid;
+        MultiMethodCollide2_Empty(spaceship, asteroid);
     END_EMPTY_LOOP(PP2)
 
     START_LOOP()
@@ -42,9 +41,11 @@ START_TEST_FUNC(PP3)
         struct Object* spaceship3d = get_space_object(r1);
         struct Object* asteroid3d_1  = get_space_object(r2);
         struct Object* asteroid3d_2  = get_space_object(r3);
-        (void)spaceship3d;
-        (void)asteroid3d_1;
-        (void)asteroid3d_2;
+        MultiMethodCollide3_Empty(
+            spaceship3d,
+            asteroid3d_1,
+            asteroid3d_2
+        );
     END_EMPTY_LOOP(PP3)
 
     START_LOOP()
@@ -73,8 +74,13 @@ START_TEST_FUNC(PP5)
         struct Object* asteroid5d_2  = get_space_object(r3);
         struct Object* asteroid5d_3  = get_space_object(r4);
         struct Object* asteroid5d_4  = get_space_object(r5);
-        (void)spaceship5d; (void)asteroid5d_1;
-        (void)asteroid5d_2; (void)asteroid5d_3; (void)asteroid5d_4;
+        MultiMethodCollide5_Empty(
+            spaceship5d,
+            asteroid5d_1,
+            asteroid5d_2,
+            asteroid5d_3,
+            asteroid5d_4
+        );
     END_EMPTY_LOOP(PP5)
 
     START_LOOP()
@@ -88,8 +94,6 @@ START_TEST_FUNC(PP5)
         struct Object* asteroid5d_2  = get_space_object(r3);
         struct Object* asteroid5d_3  = get_space_object(r4);
         struct Object* asteroid5d_4  = get_space_object(r5);
-        (void)spaceship5d; (void)asteroid5d_1;
-        (void)asteroid5d_2; (void)asteroid5d_3; (void)asteroid5d_4;
         MultiMethodCollide5D<spaceship5d, asteroid5d_1, asteroid5d_2, asteroid5d_3, asteroid5d_4>();
     END_MAIN_LOOP()
 
@@ -121,6 +125,10 @@ START_TEST_FUNC(PP10)
         struct Object* a10  = get_space_object(r10);
         (void)s1; (void)a2; (void)a3; (void)a4; (void)a5;
         (void)a6; (void)a7; (void)a8; (void)a9; (void)a10;
+        MultiMethodCollide10_Empty(
+            s1, a2, a3, a4, a5,
+            a6, a7, a8, a9, a10
+        );
     END_EMPTY_LOOP(PP10)
 
     START_LOOP()
@@ -158,7 +166,7 @@ DEF_TEST_FUNC(PPDispatch,
         int r2 = 1 + rand() % 2;
         struct Figure* fr = get_figure(r1);
         struct Figure* ft = get_figure(r2);
-        (void)fr; (void)ft;
+        MultimethodEmpty_Empty(fr, ft);
     END_EMPTY_LOOP(PPDispatch)
 
     START_LOOP()
@@ -166,7 +174,6 @@ DEF_TEST_FUNC(PPDispatch,
         int r2 = 1 + rand() % 2;
         struct Figure* fr = get_figure(r1);
         struct Figure* ft = get_figure(r2);
-        (void)fr; (void)ft;
         MultimethodEmpty<fr>(ft);
     END_MAIN_LOOP()
 )
@@ -179,7 +186,7 @@ DEF_TEST_FUNC(ProcedVTable,
         int r2 = 1 + rand() % 2;
         Shape* sh_circ = get_shape(r1);
         Shape* sh_rect = get_shape(r2);
-        (void)sh_circ; (void)sh_rect;
+        collide_empty(sh_circ, sh_rect);
     END_EMPTY_LOOP(ProcedVTable)
 
     START_LOOP()
@@ -187,7 +194,6 @@ DEF_TEST_FUNC(ProcedVTable,
         int r2 = 1 + rand() % 2;
         Shape* sh_circ = get_shape(r1);
         Shape* sh_rect = get_shape(r2);
-        (void)sh_circ; (void)sh_rect;
         sh_rect->collide(sh_rect, sh_circ);
     END_MAIN_LOOP()
 )
@@ -199,7 +205,7 @@ DEF_TEST_FUNC(ProcedSwitchX2,
         int r2 = 1 + rand() % 2;
         ShapeSwitch* ss_circ = get_shape_switch(r1);
         ShapeSwitch* ss_rect = get_shape_switch(r2);
-        (void)ss_circ; (void)ss_rect;
+        CollideSwitch_Empty(ss_circ, ss_rect);
     END_EMPTY_LOOP(ProcedSwitchX2)
 
     START_LOOP()
@@ -221,7 +227,7 @@ DEF_TEST_FUNC(ProcedSwitchX3,
         ShapeSwitch3D* ss_circ3D = get_ShapeSwitch3D(r1);
         ShapeSwitch3D* ss_rect3D = get_ShapeSwitch3D(r2);
         ShapeSwitch3D* ss_trian3D = get_ShapeSwitch3D(r3);
-        (void)ss_circ3D; (void)ss_rect3D; (void)ss_trian3D;
+        CollideSwitch3D_Empty(ss_trian3D, ss_trian3D, ss_circ3D);
     END_EMPTY_LOOP(ProcedSwitchX3)
 
     START_LOOP()
@@ -231,7 +237,6 @@ DEF_TEST_FUNC(ProcedSwitchX3,
         ShapeSwitch3D* ss_circ3D = get_ShapeSwitch3D(r1);
         ShapeSwitch3D* ss_rect3D = get_ShapeSwitch3D(r2);
         ShapeSwitch3D* ss_trian3D = get_ShapeSwitch3D(r3);
-        (void)ss_circ3D; (void)ss_rect3D; (void)ss_trian3D;
         CollideSwitch3D(ss_trian3D, ss_trian3D, ss_circ3D);
     END_MAIN_LOOP()
 )
@@ -243,7 +248,7 @@ DEF_TEST_FUNC(ProcedSwitchX10,
         int r2 = rand() % 10;
         struct Obj* h_obj = get_obj((ObjEnum)r1);
         struct Obj* i_obj = get_obj((ObjEnum)r2);
-        (void)h_obj; (void)i_obj;
+        CollideSwitchX10_Empty(h_obj, i_obj);
     END_EMPTY_LOOP(ProcedSwitchX10)
 
     START_LOOP()
@@ -278,13 +283,16 @@ START_TEST_FUNC_WITH_PARAM(Julia)
     volatile int count = 0;
 
     START_LOOP()
-        count++;
+        method = jl_lookup_generic_EMPTY(F, args, nargs, callsite, world);
+        if (method) {
+            count++;
+        }
     END_EMPTY_LOOP_WITH_PARAM(Julia)
 
     START_LOOP()
+        uint32_t callsite = (uint32_t)(uintptr_t)__builtin_return_address(0);
         method = jl_lookup_generic_(F, args, nargs, callsite, world);
         if (method) {
-            exit(1);
             count++;
         }
     END_MAIN_LOOP()
@@ -292,7 +300,7 @@ START_TEST_FUNC_WITH_PARAM(Julia)
 END_TEST_FUNC_WITH_PARAM(Julia)
 
 
-START_TEST_FUNC(JuliaFast)
+START_TEST_FUNC(JuliaFast_1)
 
     jl_value_t **args;
     uint32_t nargs = 2;
@@ -312,10 +320,51 @@ START_TEST_FUNC(JuliaFast)
     volatile int count = 0;
 
     START_LOOP()
-        count++;
+        method = jl_lookup_generic_EMPTY(F, args, nargs, callsite, world);
+        if (method) {
+            count++;
+        }
+    END_EMPTY_LOOP(JuliaFast_1)
+
+    START_LOOP()
+        uint32_t callsite = (uint32_t)(uintptr_t)__builtin_return_address(0);
+        method = jl_lookup_generic_FAST_1(F, args, nargs, callsite, world);
+        if (method) {
+            count++;
+        }
+    END_MAIN_LOOP()
+
+END_TEST_FUNC(JuliaFast_1)
+
+
+START_TEST_FUNC(JuliaFast)
+
+    jl_value_t **args;
+    uint32_t nargs = 2;
+    size_t world = 0; // mock for test
+
+    jl_value_t *F = NULL;
+
+    create_test_args(&args, nargs);
+    init_mock_data_for_test(nargs, &F, args);
+
+    jl_method_instance_t *method = NULL;
+    if (F == NULL) {
+        exit(EXIT_FAILURE);
+    }
+
+    volatile int count = 0;
+
+    START_LOOP()
+        uint32_t callsite = 0;
+        method = jl_lookup_generic_EMPTY(F, args, nargs, callsite, world);
+        if (method) {
+            count++;
+        }
     END_EMPTY_LOOP(JuliaFast)
 
     START_LOOP()
+        uint32_t callsite = (uint32_t)(uintptr_t)__builtin_return_address(0);
         method = jl_lookup_generic_FAST(F, args, nargs, callsite, world);
         if (method) {
             count++;
@@ -363,6 +412,7 @@ int main(int main_argc, char** main_argv) {
         test_ProcedVTable(number_of_iters);
 
 #ifdef BUILD_JULIA
+        test_JuliaFast_1(number_of_iters);
         test_JuliaFast(number_of_iters);
         test_Julia(number_of_iters, 2);
         test_Julia(number_of_iters, 3);

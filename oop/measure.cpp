@@ -16,8 +16,7 @@ START_TEST_FUNC(measure_visitor)
         Element* e1 = get_element(r1);
         Element* e2 = get_element(r2);
         i_vol++;
-        (void)e1;
-        (void)e2;
+        visit_empty(e1, e2);
     END_EMPTY_LOOP(measure_visitor)
 
     START_LOOP()
@@ -78,9 +77,7 @@ START_TEST_FUNC(measure_visitor3d)
         Shape3D* e1 = get_shape3d(r1);
         Shape3D* e2 = get_shape3d(r2);
         Shape3D* e3 = get_shape3d(r3);
-        (void)e1;
-        (void)e2;
-        (void)e3;
+        collide_empty(e1, e2, e3);
         i_vol++;
     END_EMPTY_LOOP(measure_visitor3d)
 
